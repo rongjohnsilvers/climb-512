@@ -1,0 +1,1948 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Climb 5.12</title>
+<meta name="description" content="Personal Climb 5.12 training tracker.">
+<meta name="theme-color" content="#EDF1F0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E1413" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Climb 5.12">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<link rel="icon" href="./icon-180.png" sizes="180x180">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#EDF1F0; --surface:#FFFFFF; --surface2:#F4F8F7;
+  --ink:#0F1C1A; --ink2:#3F534F; --ink3:#6B7E7A;
+  --line:#D2DCD9; --line2:#E5EBE9;
+  --accent:#0E7C73; --accentInk:#FFFFFF; --accentSoft:#D8EDEA; --accentLine:#9DCFC9;
+  --p1:#0E7C73; --p2:#9A6A00; --p3:#A61E64; --deload:#75847F; --peak:#2C7A31; --muted:#B3BFBC;
+  --danger:#A3352B;
+  --shadow:0 1px 2px rgba(15,28,26,.06), 0 8px 24px -16px rgba(15,28,26,.28);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1413; --surface:#161F1D; --surface2:#1B2523;
+    --ink:#E9F0EE; --ink2:#A8B8B4; --ink3:#7C8E8A;
+    --line:#2B3735; --line2:#212C2A;
+    --accent:#38D3BF; --accentInk:#06211E; --accentSoft:#163A35; --accentLine:#2C6C63;
+    --p1:#38D3BF; --p2:#DFA92F; --p3:#F16FA9; --deload:#8C9B97; --peak:#5EC163; --muted:#495451;
+    --danger:#F08579;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1413; --surface:#161F1D; --surface2:#1B2523;
+  --ink:#E9F0EE; --ink2:#A8B8B4; --ink3:#7C8E8A;
+  --line:#2B3735; --line2:#212C2A;
+  --accent:#38D3BF; --accentInk:#06211E; --accentSoft:#163A35; --accentLine:#2C6C63;
+  --p1:#38D3BF; --p2:#DFA92F; --p3:#F16FA9; --deload:#8C9B97; --peak:#5EC163; --muted:#495451;
+  --danger:#F08579;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"Public Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size:15px; line-height:1.5; -webkit-text-size-adjust:100%;
+}
+h1,h2,h3{font-family:Archivo,"Public Sans",Helvetica,Arial,sans-serif;margin:0;text-wrap:balance;letter-spacing:-.01em}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+
+/* ---- shell ---- */
+.wrap{max-width:560px;margin:0 auto;padding:0 14px 96px}
+.topbar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--ground) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line2)}
+.topbar-in{max-width:560px;margin:0 auto;padding:8px 14px;display:flex;align-items:center;gap:8px}
+.brand{display:flex;align-items:center;gap:8px;margin-right:auto;min-width:0}
+.brand svg{flex:none}
+.brand b{font-family:Archivo,sans-serif;font-weight:700;font-size:17px;letter-spacing:-.02em;white-space:nowrap}
+.iconbtn{min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;background:none;border:1px solid transparent;border-radius:10px;cursor:pointer;color:var(--ink2)}
+.iconbtn:hover{background:var(--surface2);color:var(--ink)}
+.tabs{display:flex;gap:6px;max-width:560px;margin:0 auto;padding:0 14px 8px}
+.tab{flex:1;min-height:44px;border:1px solid var(--line);background:var(--surface);border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;color:var(--ink2)}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accentInk)}
+.pillbtn{min-height:36px;padding:0 12px;border:1px solid var(--line);background:var(--surface);border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink2)}
+.pillbtn:hover{border-color:var(--accentLine);color:var(--ink)}
+
+/* ---- cards ---- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.card + .card{margin-top:12px}
+.pad{padding:14px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:var(--ink3);font-weight:500}
+
+/* ---- calendar ---- */
+.calhead{display:flex;align-items:center;gap:6px;padding:8px 8px 4px}
+.calhead .m{flex:1;text-align:center;font-family:Archivo,sans-serif;font-weight:600;font-size:15px}
+.dow,.grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+.dow{padding:2px 6px 4px}
+.dow span{text-align:center;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;color:var(--ink3)}
+.grid{padding:0 6px 8px;gap:2px}
+.day{position:relative;aspect-ratio:1/1;min-height:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  border:1px solid transparent;border-radius:9px;background:none;cursor:pointer;padding:0;font-variant-numeric:tabular-nums;
+  font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:500;color:var(--ink2)}
+.day:hover{background:var(--surface2)}
+.day.out{color:var(--muted)}
+.day.is-today{color:var(--accent);border-color:var(--accentLine)}
+.day.is-selected{background:var(--accentSoft);border-color:var(--accent);color:var(--ink)}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 12px;padding:0 12px 12px;font-size:11.5px;color:var(--ink3)}
+.legend i{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.calfold{width:100%;min-height:44px;background:none;border:0;border-top:1px solid var(--line2);cursor:pointer;font-size:13px;font-weight:600;color:var(--ink2)}
+
+/* ---- day nav ---- */
+.daynav{display:flex;gap:8px;margin:12px 0}
+.daynav button{flex:1;min-height:44px;border:1px solid var(--line);background:var(--surface);border-radius:10px;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--ink2)}
+.daynav button:hover{border-color:var(--accentLine);color:var(--ink)}
+
+/* ---- day header ---- */
+.banner{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line2);flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:600;
+  font-family:"IBM Plex Mono",monospace;letter-spacing:.03em;border:1px solid currentColor}
+.chip .sw{width:6px;height:6px;border-radius:50%;background:currentColor}
+.datebig{font-family:Archivo,sans-serif;font-size:21px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.sesstitle{font-family:Archivo,sans-serif;font-size:18px;font-weight:600;letter-spacing:-.01em;margin-top:2px}
+.phasedesc{color:var(--ink2);font-size:14px;margin-top:8px}
+.note{margin-top:10px;padding:9px 11px;background:var(--surface2);border-left:2px solid var(--accentLine);border-radius:0 8px 8px 0;font-size:13.5px;color:var(--ink2)}
+
+/* ---- steps ---- */
+.steps{list-style:none;margin:0;padding:0;counter-reset:step}
+.steps li{border-top:1px solid var(--line2)}
+.stepbtn{width:100%;display:flex;gap:10px;align-items:flex-start;text-align:left;background:none;border:0;padding:12px 14px;min-height:44px;cursor:pointer}
+.stepbtn:hover{background:var(--surface2)}
+.stepnum{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink3);padding-top:3px;min-width:16px;font-variant-numeric:tabular-nums}
+.stepmain{flex:1;min-width:0}
+.stepname{display:block;font-weight:600;font-size:14.5px}
+.stepq{display:block;color:var(--ink3);font-size:13px;margin-top:1px}
+.caret{color:var(--ink3);font-size:12px;padding-top:3px;transition:transform .15s}
+.stepbtn[aria-expanded="true"] .caret{transform:rotate(90deg)}
+.stepbody{padding:0 14px 14px 40px;font-size:13.5px;color:var(--ink2)}
+.stepbody ul{margin:0 0 8px;padding-left:18px}
+
+/* ---- forms ---- */
+.btn{min-height:46px;padding:0 16px;border-radius:11px;border:1px solid var(--accent);background:var(--accent);color:var(--accentInk);
+  font-weight:600;font-size:15px;cursor:pointer;width:100%}
+.btn.ghost{background:var(--surface);color:var(--ink2);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--accentLine);color:var(--ink)}
+.btn:disabled{opacity:.55;cursor:default}
+.field{margin-top:12px}
+.field > label{display:block;font-size:12.5px;font-weight:600;color:var(--ink2);margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chipbtn{min-height:38px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:var(--surface);
+  font-size:13px;font-weight:500;cursor:pointer;color:var(--ink2)}
+.chipbtn[aria-pressed="true"]{background:var(--accentSoft);border-color:var(--accent);color:var(--ink);font-weight:600}
+.inp,.dd{width:100%;min-height:46px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);
+  color:var(--ink);font:inherit;font-size:15px}
+.dd{padding-right:30px;appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
+  background-position:calc(100% - 16px) 21px,calc(100% - 11px) 21px;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.item{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;background:var(--surface2)}
+.itemhead{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.itemhead .t{font-size:12px;font-weight:600;color:var(--ink3);font-family:"IBM Plex Mono",monospace;letter-spacing:.06em;text-transform:uppercase}
+.rm{margin-left:auto;min-height:36px;padding:0 10px;border:1px solid var(--line);background:var(--surface);border-radius:8px;
+  font-size:12.5px;font-weight:600;color:var(--danger);cursor:pointer}
+.swatches{display:flex;flex-wrap:wrap;gap:7px}
+.sw-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);cursor:pointer;padding:0}
+.sw-btn[aria-pressed="true"]{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--accent)}
+.savebar{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--line2);padding:12px 14px;
+  border-radius:0 0 13px 13px;display:flex;flex-direction:column;gap:8px}
+.status{font-size:13px;font-weight:600;text-align:center;min-height:18px}
+.status.ok{color:var(--peak)} .status.err{color:var(--danger)} .status.busy{color:var(--ink3)}
+
+/* ---- logged summary ---- */
+.logged{display:flex;flex-direction:column;gap:8px}
+.lrow{display:flex;gap:9px;align-items:flex-start;font-size:13.5px}
+.lrow .cdot{width:9px;height:9px;border-radius:50%;margin-top:5px;flex:none;border:1px solid var(--line)}
+.tag{font-family:"IBM Plex Mono",monospace;font-size:11px;padding:1px 6px;border-radius:5px;border:1px solid var(--line);color:var(--ink3)}
+.tag.sent{color:var(--peak);border-color:currentColor}
+
+/* ---- progress ---- */
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.kpi .n{font-family:Archivo,sans-serif;font-size:26px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:11.5px;color:var(--ink3);margin-top:5px;font-weight:500}
+.bars{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+.bar{display:grid;grid-template-columns:64px 1fr auto;gap:8px;align-items:center;font-size:12.5px}
+.bar .track{display:block;height:9px;background:var(--surface2);border:1px solid var(--line2);border-radius:5px;overflow:hidden}
+.bar .fill{display:block;height:100%;background:var(--accent);border-radius:4px}
+.bar .g{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:12px}
+.empty{color:var(--ink3);font-size:13.5px;padding:14px;text-align:center;border:1px dashed var(--line);border-radius:11px;background:var(--surface2)}
+.filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+.filters .chipbtn{white-space:nowrap}
+.hist{display:flex;flex-direction:column}
+.hist .h{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;padding:10px 0;border-top:1px solid var(--line2)}
+.hist .h:first-child{border-top:0}
+.exgroup{border-top:1px solid var(--line2);padding:10px 0}
+.exgroup:first-child{border-top:0}
+.exgroup h4{margin:0 0 5px;font-family:Archivo,sans-serif;font-size:14px;font-weight:600}
+.exline{font-size:12.5px;color:var(--ink2);display:flex;gap:8px;flex-wrap:wrap}
+.hr{height:1px;background:var(--line2);margin:14px 0}
+.tiny{font-size:12px;color:var(--ink3)}
+@media (prefers-reduced-motion: reduce){*{transition:none !important;animation:none !important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M2 20L9 7l4 7 2.5-4L22 20H2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" style="color:var(--accent)"/>
+        <path d="M7.2 12.8h3.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" style="color:var(--ink3)"/>
+      </svg>
+      <b>Climb 5.12</b>
+    </div>
+    <button class="pillbtn" id="btnToday" type="button">Today</button>
+    <button class="iconbtn" id="btnTheme" type="button" aria-label="Theme: follow system"><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 2a8 8 0 0 1 0 16Z" fill="currentColor"/></svg></button>
+  </div>
+  <div class="tabs" role="tablist" aria-label="Views">
+    <button class="tab" id="tabPlan" role="tab" aria-selected="true" type="button">Plan</button>
+    <button class="tab" id="tabProgress" role="tab" aria-selected="false" type="button">Progress</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="viewPlan">
+    <div class="card" id="calCard">
+      <div class="calhead">
+        <button class="iconbtn" id="prevMonth" type="button" aria-label="Previous month">‹</button>
+        <div class="m" id="monthLabel">August 2026</div>
+        <button class="iconbtn" id="nextMonth" type="button" aria-label="Next month">›</button>
+      </div>
+      <div id="calBody">
+        <div class="dow"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+        <div class="grid" id="calGrid"></div>
+        <div class="legend">
+          <span><i style="background:var(--p1)"></i>Phase 1</span>
+          <span><i style="background:var(--p2)"></i>Phase 2</span>
+          <span><i style="background:var(--p3)"></i>Phase 3</span>
+          <span><i style="background:var(--deload)"></i>Deload</span>
+          <span><i style="background:var(--peak)"></i>Peak window</span>
+          <span><i style="background:var(--muted)"></i>Rest</span>
+        </div>
+      </div>
+      <button class="calfold" id="calFold" type="button" aria-expanded="true">▾ Minimize calendar</button>
+    </div>
+
+    <nav class="daynav" aria-label="Day navigation">
+      <button id="prevDay" type="button">‹ Previous day</button>
+      <button id="nextDay" type="button">Next day ›</button>
+    </nav>
+
+    <div id="dayView"></div>
+  </section>
+
+  <section id="viewProgress" hidden></section>
+
+  <div class="hr"></div>
+  <div class="card pad">
+    <div class="eyebrow">Storage</div>
+    <div class="tiny" id="storeLine" style="margin:6px 0 10px" aria-live="polite">Checking where this device saves your logs…</div>
+    <div class="eyebrow" style="margin-top:16px">Backup</div>
+    <div class="tiny" style="margin:6px 0 10px">Export writes a JSON copy to your downloads. Import restores one — that is how logs move between devices.</div>
+    <div class="row2">
+      <button class="btn ghost" id="btnExport" type="button">Export data</button>
+      <button class="btn ghost" id="btnImport" type="button">Import data</button>
+    </div>
+    <input type="file" id="fileImport" accept="application/json,.json" hidden>
+    <div class="status" id="ioStatus" role="status" aria-live="polite"></div>
+  </div>
+</main>
+
+<div class="timerbar" id="timerBar" hidden>
+  <div class="tprog"><span id="tFill"></span></div>
+  <div class="tin">
+    <div class="tmeta">
+      <div class="tdrill" id="tDrill"></div>
+      <div class="tphase" id="tPhase" role="status" aria-live="polite"></div>
+    </div>
+    <div class="tclock" id="tClock">0:00</div>
+    <div class="tctl">
+      <button class="tbtn pri" id="tMain" type="button">Pause</button>
+      <button class="tbtn" id="tSkip" type="button">Skip</button>
+      <button class="tbtn ic" id="tSound" type="button" aria-label="Mute timer sounds">&#9834;</button>
+      <button class="tbtn ic" id="tStop" type="button" aria-label="Stop timer">&#10005;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ====================== PLAN DATA ======================
+   Schedule: Climb_5.12_Dated_Schedule.csv  (2026-08-24 .. 2026-11-15)
+   Sessions: CLIMB 5.12 (Power Company Climbing) + Exercise List
+   Hangboard work is never a standalone session. Max Hangs / Minimum Edge
+   Hangs sit inside Route Project (B) and Boulder Power (D) in the book's
+   own order: ... Route Warm Up (Pacing) -> Hangboard Warm Up -> HANGS ->
+   Rest 5 min -> project work -> cool down.
+======================================================== */
+var PLAN_START="2026-08-24", PLAN_END="2026-11-15", PEAK_START="2026-11-16", PEAK_END="2026-12-15";
+
+var PLAN_ROWS=[
+["2026-08-24",1,"p1","sst","SST"],
+["2026-08-25",1,"p1","routeEnd","Route Endurance"],
+["2026-08-26",1,"p1","rest","Rest"],
+["2026-08-27",1,"p1","routeProj","Route Project"],
+["2026-08-28",1,"p1","rest","Rest"],
+["2026-08-29",1,"p1","weekend","Weekend Climb (Route Endurance / Outdoor)"],
+["2026-08-30",1,"p1","rest","Rest (or swap with Saturday)"],
+["2026-08-31",2,"p1","sst","SST"],
+["2026-09-01",2,"p1","routeEnd","Route Endurance"],
+["2026-09-02",2,"p1","rest","Rest"],
+["2026-09-03",2,"p1","boulderPow","Boulder Power"],
+["2026-09-04",2,"p1","rest","Rest"],
+["2026-09-05",2,"p1","weekend","Weekend Climb (Route Endurance / Outdoor)"],
+["2026-09-06",2,"p1","rest","Rest (or swap with Saturday)"],
+["2026-09-07",3,"p1","sst","SST"],
+["2026-09-08",3,"p1","routeEnd","Route Endurance"],
+["2026-09-09",3,"p1","rest","Rest"],
+["2026-09-10",3,"p1","routeProj","Route Project"],
+["2026-09-11",3,"p1","rest","Rest"],
+["2026-09-12",3,"p1","weekend","Weekend Climb (Route Endurance / Outdoor)"],
+["2026-09-13",3,"p1","rest","Rest (or swap with Saturday)"],
+["2026-09-14",4,"p1d","sst","SST (Deload)"],
+["2026-09-15",4,"p1d","routeEnd","Route Endurance (Deload)"],
+["2026-09-16",4,"p1d","rest","Rest"],
+["2026-09-17",4,"p1d","boulderPow","Boulder Power (Deload)"],
+["2026-09-18",4,"p1d","rest","Rest"],
+["2026-09-19",4,"p1d","light","Optional Light Movement / Rest"],
+["2026-09-20",4,"p1d","rest","Rest (or swap with Saturday)"],
+["2026-09-21",5,"p2","sst","SST"],
+["2026-09-22",5,"p2","routeEnd","Route Endurance"],
+["2026-09-23",5,"p2","rest","Rest"],
+["2026-09-24",5,"p2","routeProj","Route Project"],
+["2026-09-25",5,"p2","rest","Rest"],
+["2026-09-26",5,"p2","weekend","Weekend Climb (Performance / Outdoor)"],
+["2026-09-27",5,"p2","rest","Rest (or swap with Saturday)"],
+["2026-09-28",6,"p2","sst","SST"],
+["2026-09-29",6,"p2","routeEnd","Route Endurance"],
+["2026-09-30",6,"p2","rest","Rest"],
+["2026-10-01",6,"p2","boulderPow","Boulder Power"],
+["2026-10-02",6,"p2","rest","Rest"],
+["2026-10-03",6,"p2","weekend","Weekend Climb (Performance / Outdoor)"],
+["2026-10-04",6,"p2","rest","Rest (or swap with Saturday)"],
+["2026-10-05",7,"p2","sst","SST"],
+["2026-10-06",7,"p2","routeEnd","Route Endurance"],
+["2026-10-07",7,"p2","rest","Rest"],
+["2026-10-08",7,"p2","routeProj","Route Project"],
+["2026-10-09",7,"p2","rest","Rest"],
+["2026-10-10",7,"p2","weekend","Weekend Climb (Performance / Outdoor)"],
+["2026-10-11",7,"p2","rest","Rest (or swap with Saturday)"],
+["2026-10-12",8,"p2d","sst","SST (Deload)"],
+["2026-10-13",8,"p2d","routeEnd","Route Endurance (Deload)"],
+["2026-10-14",8,"p2d","rest","Rest"],
+["2026-10-15",8,"p2d","boulderPow","Boulder Power (Deload)"],
+["2026-10-16",8,"p2d","rest","Rest"],
+["2026-10-17",8,"p2d","light","Optional Light Movement / Rest"],
+["2026-10-18",8,"p2d","rest","Rest (or swap with Saturday)"],
+["2026-10-19",9,"p3","sst","SST"],
+["2026-10-20",9,"p3","routeEnd","Route Power Endurance"],
+["2026-10-21",9,"p3","rest","Rest"],
+["2026-10-22",9,"p3","routeProj","Route Project"],
+["2026-10-23",9,"p3","rest","Rest"],
+["2026-10-24",9,"p3","weekend","Weekend Route Power Endurance / Outdoor Project"],
+["2026-10-25",9,"p3","rest","Rest (or swap with Saturday)"],
+["2026-10-26",10,"p3","sst","SST"],
+["2026-10-27",10,"p3","routeEnd","Route Power Endurance"],
+["2026-10-28",10,"p3","rest","Rest"],
+["2026-10-29",10,"p3","boulderPow","Boulder Power"],
+["2026-10-30",10,"p3","rest","Rest"],
+["2026-10-31",10,"p3","weekend","Weekend Route Power Endurance / Outdoor Project"],
+["2026-11-01",10,"p3","rest","Rest (or swap with Saturday)"],
+["2026-11-02",11,"p3","sst","SST"],
+["2026-11-03",11,"p3","routeEnd","Route Power Endurance"],
+["2026-11-04",11,"p3","rest","Rest"],
+["2026-11-05",11,"p3","routeProj","Route Project"],
+["2026-11-06",11,"p3","rest","Rest"],
+["2026-11-07",11,"p3","weekend","Weekend Route Power Endurance / Outdoor Project"],
+["2026-11-08",11,"p3","rest","Rest (or swap with Saturday)"],
+["2026-11-09",12,"p3d","sst","SST (Deload)"],
+["2026-11-10",12,"p3d","routeEnd","Route Power Endurance (Deload)"],
+["2026-11-11",12,"p3d","rest","Rest"],
+["2026-11-12",12,"p3d","boulderPow","Boulder Power (Deload)"],
+["2026-11-13",12,"p3d","rest","Rest"],
+["2026-11-14",12,"p3d","light","Optional Light Movement / Rest"],
+["2026-11-15",12,"p3d","rest","Rest (or swap with Saturday)"]
+];
+
+var PHASES={
+ p1:{name:"Phase 1: Strength & Stamina",short:"Phase 1",color:"var(--p1)",
+     desc:"Base building. Strength on and off the wall plus a bigger stamina base to support the harder work later in the plan."},
+ p1d:{name:"Phase 1 Deload",short:"Deload",color:"var(--deload)",
+     desc:"Volume comes down, intensity stays up. Keep trying hard on what you do."},
+ p2:{name:"Phase 2: Power & Endurance",short:"Phase 2",color:"var(--p2)",
+     desc:"Same weekly shape as Phase 1, with power added. Steep and vert laps carry the stamina work forward."},
+ p2d:{name:"Phase 2 Deload",short:"Deload",color:"var(--deload)",
+     desc:"Roughly half the volume of a normal week. Hangs are replaced by Find the Minimum Edge to recalibrate."},
+ p3:{name:"Phase 3: Power Endurance",short:"Phase 3",color:"var(--p3)",
+     desc:"Holding quality movement together as fatigue stacks up. Route Crux Intervals are the centrepiece."},
+ p3d:{name:"Phase 3 Deload",short:"Deload",color:"var(--deload)",
+     desc:"Final taper. Same frequency, much less volume, real intention in every drill. Arrive fresh."}
+};
+
+function S(n,q,extra){var o={n:n,q:q||""};if(extra)for(var k in extra)o[k]=extra[k];return o;}
+
+var MAX_HANGS_BY_WEEK={1:5,2:6,3:7,4:6,5:7,6:8,7:9};
+var MIN_EDGE_BY_WEEK={9:5,10:6,11:7,12:4};
+var P2_LAPS_BY_WEEK={5:3,6:4,7:5};
+var P3_CRUX_SETS={9:2,10:3,11:4,12:2};
+
+function hangStep(phase,week){
+  if(phase==="p2d") return S("Find the Minimum Edge","recalibrate today",{hang:"find"});
+  if(phase==="p3"||phase==="p3d")
+    return S("Minimum Edge Hangs (7 On/53 Off)",(MIN_EDGE_BY_WEEK[week]||5)+" hangs",{hang:"min"});
+  return S("Max Hangs (7 On/53 Off)",(MAX_HANGS_BY_WEEK[week]||5)+" hangs",{hang:"max"});
+}
+function hangNotes(phase){
+  if(phase==="p1")  return ["Add a hang each week, up to 7 hangs in Week 3. Keep adding weight as possible."];
+  if(phase==="p2")  return ["Add a hang each week, up to 9 hangs in Week 7. Keep adding weight as possible."];
+  if(phase==="p3")  return ["Add a hang each week, up to 7 hangs in Week 11. Keep reducing edge size or adding weight."];
+  if(phase==="p2d") return ["Deload week swaps the hangs for Find the Minimum Edge."];
+  return [];
+}
+
+var TPL={};
+
+TPL.routeEnd={
+ p1:function(w){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("On the Wall Mobility","10 min, routes or boulders"),
+   S("Route Warm Up","2-3 easy routes"),
+   S("Route Warm Up (Pacing)","1 mid-level route"),
+   S("Route Mini Project","1-2 attempts"),
+   S("UDU (Up, Down, Up) Project","2-3 attempts, plenty of rest between")
+  ].concat(w===3?[S("Vert Laps","laps to failure on a moderate route")]:[])
+   .concat([S("Route Cool Down","1-2 easy routes")]),
+  notes:w===3?["Week 3 adds Vert Laps before the cool down."]:[]};},
+ p1d:function(){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("On the Wall Mobility","10 min, routes or boulders"),
+   S("Route Warm Up","2-3 easy routes"),
+   S("Route Warm Up (Pacing)","1 mid-level route"),
+   S("Route Mini Project","1-2 attempts"),
+   S("UDU (Up, Down, Up) Project","1 attempt only"),
+   S("Route Cool Down","2-3 easy routes")],notes:[]};},
+ p2:function(w){var l=P2_LAPS_BY_WEEK[w]||3;return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("On the Wall Mobility","10 min, routes or boulders"),
+   S("Route Warm Up","2-3 easy routes"),
+   S("Route Warm Up (Pacing)","1 mid-level route"),
+   S("UDU (Up, Down, Up) Project","1 attempt"),
+   S("Steep Laps",l+" laps on lead, moderate route, 2 min rest between"),
+   S("Rest","10 min"),
+   S("Vert Laps",l+" laps, 1st on lead then TR, no rest between"),
+   S("Route Cool Down","1-2 easy routes")],
+  notes:["Add a lap to both Steep Laps and Vert Laps each week, up to 5 in Week 7."]};},
+ p2d:function(){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("On the Wall Mobility","10 min, routes or boulders"),
+   S("Route Warm Up","2-3 easy routes"),
+   S("Route Warm Up (Pacing)","1 mid-level route"),
+   S("Route Crux Intervals","1 set, find a good route"),
+   S("UDU (Up, Down, Up) Project","2 attempts"),
+   S("Route Cool Down","1-2 easy routes")],notes:[]};},
+ p3:function(w){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("On the Wall Mobility","10 min, routes or boulders"),
+   S("Route Warm Up","2-3 easy routes"),
+   S("Route Warm Up (Pacing)","1 mid-level route"),
+   S("Route Project","1-2 attempts"),
+   S("Rest","5 min"),
+   S("Route Crux Intervals","4x crux / 1x to the top = 1 set. "+(P3_CRUX_SETS[w]||2)+" sets, 15 min rest between")],
+  notes:["Add a set to Route Crux Intervals each week, up to 4 sets in Week 11."]};},
+ p3d:function(){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("On the Wall Mobility","10 min, routes or boulders"),
+   S("Route Warm Up","2-3 easy routes"),
+   S("Route Warm Up (Pacing)","1 mid-level route"),
+   S("Route Project","1 attempt"),
+   S("Rest","5 min"),
+   S("Route Crux Intervals","4x crux / 1x to the top = 1 set. 2 sets, 15 min rest between")],notes:[]};}
+};
+
+function routeProj(phase,tail){
+  return function(w){
+    return{steps:[
+      S("Climbing Movement Prep","as needed"),
+      S("On the Wall Mobility","10 min, routes or boulders"),
+      S("Route Warm Up","2-3 easy routes"),
+      S("Route Warm Up (Pacing)","1 mid-level route"),
+      S("Hangboard Warm Up","get the fingers warmed up"),
+      hangStep(phase,w),
+      S("Rest","5 min")
+    ].concat(tail(w)),notes:hangNotes(phase)};
+  };
+}
+TPL.routeProj={
+ p1:routeProj("p1",function(){return[S("Route Mini Project","2-3 attempts"),S("Route Cool Down","1-2 easy routes")];}),
+ p1d:routeProj("p1d",function(){return[S("Route Mini Project","1 attempt only"),S("Route Project","go bolt-to-bolt on something hard"),S("Route Cool Down","1-2 easy routes")];}),
+ p2:routeProj("p2",function(){return[S("Route Mini Project","1-2 attempts"),S("Route Project","1-2 attempts"),S("Route Cool Down","1-2 easy routes")];}),
+ p2d:routeProj("p2d",function(){return[S("Route Project","2 attempts"),S("Route Cool Down","1-2 easy routes")];}),
+ p3:routeProj("p3",function(){return[S("Route Project","2-3 attempts")];}),
+ p3d:routeProj("p3d",function(){return[S("Route Project","1-2 attempts")];})
+};
+
+TPL.boulderPow={
+ p1:function(w){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("On the Wall Mobility","10-15 min"),
+   S("Contrast Warm Up (aka Sloth Monkeys)","2 easy warmups"),
+   S("Hovers (Before and After)","2 easy warmups"),
+   S("One Touch","2 mid warmups"),
+   S("Perfect Repeat","1 moderate problem"),
+   hangStep("p1",w),
+   S("Rest","5 min"),
+   S("Boulder Mini Project","15-30 min"),
+   S("Single Session Sends","30-45 min"),
+   S("Rhythm Cool Down","2-3 easy problems")],notes:hangNotes("p1")};},
+ p1d:function(w){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("On the Wall Mobility","10-15 min"),
+   S("Contrast Warm Up (aka Sloth Monkeys)","2 easy warmups"),
+   S("Hovers (Before and After)","2 easy warmups"),
+   S("One Touch","1 mid warmup"),
+   S("Perfect Repeat","1 moderate problem"),
+   hangStep("p1d",w),
+   S("Rest","5 min"),
+   S("Boulder Mini Project","15 min"),
+   S("Single Session Sends","15-20 min"),
+   S("Rhythm Cool Down","2-3 easy problems")],notes:[]};},
+ p2:function(w){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("On the Wall Mobility","10-15 min"),
+   S("Hip Shapes","2 easy warmups"),
+   S("Contrast Warm Up (aka Sloth Monkeys)","1 easy warmup, 1 mid warmup"),
+   S("Hovers (Before and After)","2 easy warmups"),
+   S("One Touch","2 mid warmups"),
+   S("Jump Practice","15 min"),
+   (w>=6?S("Three Strike Repeat Circuit","2 difficult problems, rest as needed")
+        :S("Three Strike Newcomers","1 moderate problem")),
+   hangStep("p2",w),
+   S("Rest","5 min"),
+   S("Boulder Mini Project","30-45 min"),
+   S("Limit Bouldering","15-20 min"),
+   S("Rhythm Cool Down","2-3 easy problems")],
+  notes:hangNotes("p2").concat(w>=6?["Weeks 6 and 7 swap Three Strike Newcomers for the Three Strike Repeat Circuit."]:[])};},
+ p2d:function(w){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("On the Wall Mobility","10-15 min"),
+   S("Hip Shapes","2 easy warmups"),
+   S("Contrast Warm Up (aka Sloth Monkeys)","1 easy warmup, 1 mid warmup"),
+   S("One Touch","1 mid warmup"),
+   S("Jump Practice","10 min"),
+   S("Three Strike Repeat Circuit","1 difficult problem"),
+   hangStep("p2d",w),
+   S("Rest","5 min"),
+   S("Boulder Mini Project","20-30 min"),
+   S("Limit Bouldering","10 min"),
+   S("Rhythm Cool Down","2-3 easy problems")],notes:hangNotes("p2d")};},
+ p3:function(w){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("On the Wall Mobility","10-15 min"),
+   S("Contrast Warm Up (aka Sloth Monkeys)","2 mid warmups"),
+   S("Hovers (Before and After)","2 easy warmups"),
+   S("One Touch","2 mid warmups"),
+   S("Three Strike Repeat Circuit","2 difficult problems, rest as needed"),
+   hangStep("p3",w),
+   S("Rest","5 min"),
+   S("Boulder Mini Project","up to 45 min"),
+   S("Limit Bouldering","up to 30 min"),
+   S("Rhythm Cool Down","2-3 easy problems")],notes:hangNotes("p3")};},
+ p3d:function(w){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("On the Wall Mobility","10-15 min"),
+   S("Contrast Warm Up (aka Sloth Monkeys)","2 mid warmups"),
+   S("Hovers (Before and After)","2 easy warmups"),
+   S("One Touch","2 mid warmups"),
+   S("Three Strike Repeat Circuit","1 difficult problem"),
+   hangStep("p3d",w),
+   S("Rest","5 min"),
+   S("Boulder Mini Project","up to 30 min"),
+   S("Limit Bouldering","up to 15 min"),
+   S("Rhythm Cool Down","2-3 easy problems")],notes:[]};}
+};
+
+TPL.sst={
+ p1:function(w){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("Superset 1",(w>=2?3:2)+" sets / 2 min rest between",{items:["Push Up Progression: 7-10 reps","One Leg Hip Bridge: 5-7 reps each side","Hollow Body Hold: 30 sec"]}),
+   S("Superset 2",(w>=2?3:2)+" sets / 2 min rest between",{items:["Body Weight Strict Pull Up: 5-7 reps","Inverted Row: 5-7 reps"]}),
+   S("Superset 3",(w>=3?3:2)+" sets / 2 min rest between",{items:["Pistol Squat Progression: 3 reps each side","Two Arm Active Hang: 5 sec hold","Push Up Position Bird Dog: 2 reps each side"]})],
+  notes:["Supersets 1 and 2 go to 3 sets in Week 2; Superset 3 goes to 3 sets in Week 3."]};},
+ p1d:function(){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("Superset 1","2 sets / 2 min rest between",{items:["Push Up Progression: 5-7 reps","One Leg Hip Bridge: 3-5 reps each side","Hollow Body Hold: 20 sec"]}),
+   S("Superset 2","2 sets / 2 min rest between",{items:["Body Weight Strict Pull Up: 3-5 reps","Inverted Row: 3-5 reps"]}),
+   S("Superset 3","2 sets / 2 min rest between",{items:["Pistol Squat Progression: 2 reps each side","Two Arm Active Hang: 5 sec hold","Push Up Position Bird Dog: 1 rep each side"]})],notes:[]};},
+ p2:function(w){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("Superset 1",(w>=6?3:2)+" sets / 2 min rest between",{items:["Ballistic Push Ups: 3-5 reps","One Leg Hip Bridge: 5-7 reps each side","Hollow Body Hold: 40 sec"]}),
+   S("Superset 2",(w>=7?3:2)+" sets / 2 min rest between",{items:["Explosive Sternum Pull Up: 3-5 reps","One Arm Rotational Row: 3-5 reps each side"]}),
+   S("Superset 3",(w>=6?3:2)+" sets / 2 min rest between",{items:["Box Jump: 5 reps","Two Arm Active Hang: 7 sec hold","Push Up Position Bird Dog: 3 reps each side"]})],
+  notes:["Supersets 1 and 3 go to 3 sets in Week 6; Superset 2 goes to 3 sets in Week 7."]};},
+ p2d:function(){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("Superset 1","2 sets / 2 min rest between",{items:["Ballistic Push Ups: 3-5 reps","One Leg Hip Bridge: 3-5 reps each side","Hollow Body Hold: 30 sec"]}),
+   S("Superset 2","2 sets / 2 min rest between",{items:["Explosive Sternum Pull Up: 3-5 reps","One Arm Rotational Row: 3-5 reps each side"]}),
+   S("Superset 3","2 sets / 2 min rest between",{items:["Box Jump: 3 reps","Two Arm Active Hang: 7 sec hold","Push Up Position Bird Dog: 1 rep each side"]})],notes:[]};},
+ p3:function(w){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("Superset 1",({9:2,10:3,11:4}[w]||2)+" sets / 2 min rest between",{items:["Bodyweight Strict Pull Up: 5-7 reps","One Leg Push Up: 5-7 reps each side","Box Jump: 5 reps","Hollow Body Hold: 40 sec"]})],
+  notes:["Add a set each week, up to 4 sets in Week 11."]};},
+ p3d:function(){return{steps:[
+   S("Climbing Movement Prep","as needed"),
+   S("Superset 1","2 sets / 2 min rest between",{items:["Bodyweight Strict Pull Up: 5-7 reps","One Leg Push Up: 5-7 reps each side","Box Jump: 5 reps","Hollow Body Hold: 40 sec"]})],notes:[]};}
+};
+
+function weekendCard(phase,blurb){
+  return function(w){
+    return{steps:TPL.routeEnd[phase](w).steps,
+      notes:[blurb,"If you get outside, that replaces the gym session. Warm up on easy terrain and save maximum efforts for the route."],
+      outdoor:true};
+  };
+}
+TPL.weekend={
+ p1:weekendCard("p1","Outdoors if you can, otherwise run the Route Endurance session below."),
+ p1d:weekendCard("p1d","Outdoors if you can, otherwise run the deload Route Endurance session below."),
+ p2:weekendCard("p2","Performance day. Outdoors if you can, otherwise run the Route Endurance session below."),
+ p2d:weekendCard("p2d","Outdoors if you can, otherwise run the deload Route Endurance session below."),
+ p3:weekendCard("p3","Outdoor project day. Otherwise run the Route Power Endurance session below."),
+ p3d:weekendCard("p3d","Outdoor project day. Otherwise run the taper Route Power Endurance session below.")
+};
+
+function lightCard(){return{steps:[S("On the Wall Mobility","15-20 min, very easy terrain only - no projecting")],
+  notes:["Optional. Taking the full rest day instead is a fine choice."]};}
+TPL.light={p1:lightCard,p1d:lightCard,p2:lightCard,p2d:lightCard,p3:lightCard,p3d:lightCard};
+
+function restCard(){return{steps:[],notes:[],rest:true};}
+TPL.rest={p1:restCard,p1d:restCard,p2:restCard,p2d:restCard,p3:restCard,p3d:restCard};
+
+var STEP_DESC={
+"Climbing Movement Prep":"A few minutes of general priming before you touch the wall: jumping jacks, seal jacks, leg and circle kicks, inchworms, spidermans, can openers, high knee hip bridges, then wrist circles, finger flicks and tendon glides.",
+"On the Wall Mobility":"Very easy terrain, routes or boulders. Move shoulders, elbows, hips and knees through range: drop knees, high steps, heel hooks. Step off and rest whenever you like. Do not get pumped.",
+"Route Warm Up":"Easy routes of ascending difficulty. Move smoothly and in balance, clip from good stances, watch your breathing. Include a warm up or two at the angle you will be projecting on.",
+"Route Warm Up (Pacing)":"Still warm up level, but slightly faster than your normal pace. Only enough faster that you stay precise and chalk up less. Moving quickly through hard sections saves energy on real projects.",
+"Route Mini Project":"A route that should take 2-3 sessions to send. Work it tactically: bolt to bolt, then links, then overlaps, then high point / low point, then redpoint attempts. Rest 15-20 min between hard attempts.",
+"Route Project":"A route that should take 4-8 sessions. Same tactical ladder as a mini project, and only advance a step when you are genuinely ready. Rest 15-20 min between hard attempts.",
+"Route Cool Down":"Very easy routes. Breathe, clip from good stances, move fluidly, stay relaxed. Easy enough that you keep moving well despite fatigue.",
+"Rhythm Cool Down":"Easy boulders. Find your natural pace and flow, then over sessions play with speeding it up and slowing it down. Keep the breathing easy.",
+"Hangboard Warm Up":"Order matters more than timing: jumping jacks, arm circles both ways, jug pull ups, scapular pull ups, finger flicks and tendon glides, optional foot-on campus ladder, bodyweight hangs on progressively smaller grips, then optional weighted hangs on the target grip.",
+"Max Hangs (7 On/53 Off)":"One hang is one set. Four finger half crimp, 18-20 mm edge to start. 7 seconds on, 53 seconds off. Stop at the prescribed number of hangs rather than running the timer out. Add weight while still completing every rep, finishing the last one with a couple of seconds left. Once added weight hits half bodyweight, drop to a smaller rung. Elbows slightly bent, shoulders down, core tight, eyes forward.",
+"Minimum Edge Hangs (7 On/53 Off)":"One hang is one set. Four finger half crimp on an edge that is difficult but possible to hang for about 10 seconds. 7 on, 53 off. Reduce edge size as able while still completing every rep; if you are already on the smallest edge, add a little weight. Elbows slightly bent, shoulders down, core tight.",
+"Find the Minimum Edge":"Find the smallest edge you can hang for 10-12 seconds. Start near what you expect and adjust. Half crimp, form must not break, but it should be moderately hard. Rest 2-3 min between attempts.",
+"Rest":"Actual rest. Stay off the wall and let the next piece of the session be high quality.",
+"UDU (Up, Down, Up) Project":"A sustained route on an angle and grip type like your outdoor projects. Lead it without clipping the anchors, downclimb unclipping as you go (leave the first few bolts in), then go back up. Stop at rests and practice shaking out. Rest well between attempts.",
+"Vert Laps":"A vertical or slightly overhanging route about a number grade below your onsight level. First lap on lead, the rest on toprope, no rest between laps. If you fall, lower and start the next lap.",
+"Steep Laps":"A steep route about a number grade below your max onsight. All laps on lead with the prescribed rest between. If you fall, lower off, rest, and start the next lap. Composure under fatigue is the point.",
+"Route Crux Intervals":"A route you can send with a low, bouldery crux. Lead to the bolt above the crux, clip, lower immediately, then climb to the same point on TR with no rest and lower again. On the 4th pass through the crux, try to finish the route. Pull the rope and rest the prescribed time. That is one set.",
+"Contrast Warm Up (aka Sloth Monkeys)":"Climb each problem twice back to back, which counts as one problem. First slowly and sloth-like with no static holds and no momentum, pulling and pushing yourself into position. Then again driving with the legs and letting momentum carry you. Exaggerate both.",
+"Hovers (Before and After)":"Each problem twice. First pause your hand over the next hold for about 2 seconds before taking it, locking in with the whole body. Then pause as the hand leaves the hold instead, recreate the movement and grind through it.",
+"One Touch":"Place every hand and foot exactly once. If you misplace one, live with it and keep climbing. Take your time and execute.",
+"Perfect Repeat":"Problems you can send consistently, at or slightly above flash level. Do each 3-5 times chasing perfection: fix foot shifting, choppy movement, sagging off the wall. Test alternate beta and decide whether it wants speed or precision.",
+"Hip Shapes":"Practice the two common hip positions. Climb a problem square and open on every move, then again turning the hips into the wall on every move. Do both the intended sequence and open feet.",
+"Jump Practice":"Easy dynos between jugs first, then bigger or harder. Harder does not only mean bigger: worse feet, worse hands, both hands to one hold, or to different holds.",
+"Three Strike Newcomers":"A new boulder just above flash level, something you should do in 3-5 tries. Study it, plan the beta, and you get three attempts. Rest well between goes and reflect on what went wrong. No send, move on.",
+"Three Strike Repeat Circuit":"Repeat the hardest boulders you have done in the gym, personally hardest rather than highest graded. Three tries each, no exceptions. Rest at least 3 min between attempts. Quality efforts, not a pump.",
+"Boulder Mini Project":"A boulder close to the send, or something new you could do in a handful of sessions. No more than 15-20 min on any one problem. Be tactical and rest well between efforts.",
+"Single Session Sends":"Problems you could send today, ideally in 3-7 attempts. Be tactical and go for the fastest send with the least energy. Vary style, angle and grip type between boulders.",
+"Limit Bouldering":"Short, very hard sequences of 1-5 moves. Vary angle and grip type. Sending is not the goal; every sequence should be near your absolute max. Rest more than you think. Stop when your coordination starts to fail.",
+"Superset 1":"Run the listed exercises back to back, then rest the prescribed time before the next set.",
+"Superset 2":"Run the listed exercises back to back, then rest the prescribed time before the next set.",
+"Superset 3":"Run the listed exercises back to back, then rest the prescribed time before the next set."
+};
+</script>
+
+<style>
+/* ---- session switch ---- */
+.switch{display:flex;gap:6px;padding:10px 14px 0}
+.switch button{flex:1;min-height:42px;border:1px solid var(--line);background:var(--surface);border-radius:10px;
+  font-size:13.5px;font-weight:600;cursor:pointer;color:var(--ink2)}
+.switch button[aria-pressed="true"]{background:var(--accentSoft);border-color:var(--accent);color:var(--ink)}
+.switchnote{padding:6px 14px 0;font-size:12px;color:var(--ink3)}
+
+/* ---- step logging ---- */
+.stepbtn .badge{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;
+  border:1px solid var(--line);color:var(--ink3);font-size:10px;flex:none;margin-top:2px}
+.stepbtn .badge.on{background:var(--accent);border-color:var(--accent);color:var(--accentInk)}
+.stepbtn .badge.na{border:0}
+.logfields{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.logfields .eyebrow{margin-bottom:2px}
+.logfields .field:first-of-type{margin-top:8px}
+.exhead{margin-top:16px;padding-top:10px;border-top:1px solid var(--line2);
+  font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.daysave{position:sticky;bottom:0;z-index:20;margin-top:12px;background:var(--surface);border:1px solid var(--line);
+  border-radius:12px;box-shadow:var(--shadow);padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.daysave[hidden]{display:none}
+.daysave .row{display:flex;gap:8px}
+.daysave .row .btn{flex:1}
+
+/* ---- progress: deltas + trends ---- */
+.delta{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:10px 0;border-top:1px solid var(--line2)}
+.delta:first-of-type{border-top:0}
+.delta .nm{font-size:13.5px;font-weight:600;min-width:0}
+.delta .nm small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px}
+.delta .vv{grid-column:1 / -1;font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink2);font-variant-numeric:tabular-nums}
+.chg{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:600;align-self:start;
+  padding:2px 7px;border-radius:6px;border:1px solid currentColor;white-space:nowrap}
+.chg.up{color:var(--peak)} .chg.down{color:var(--danger)} .chg.flat{color:var(--ink3)} .chg.new{color:var(--accent)}
+.trend{border-top:1px solid var(--line2)}
+.trendbtn{width:100%;display:grid;grid-template-columns:1fr auto;gap:2px 10px;
+  background:none;border:0;padding:12px 0 10px;min-height:46px;cursor:pointer;text-align:left}
+.trendbtn:hover{background:var(--surface2)}
+.trendbtn .nm{font-size:13.5px;font-weight:600;min-width:0}
+.trendbtn .nm small{display:block;font-weight:400;color:var(--ink3);font-size:11.5px}
+.trendbtn .cur{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;text-align:right;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.trendbtn .cur small{display:block;font-weight:400;color:var(--ink3);font-size:11px}
+.sparkwrap{grid-column:1 / -1;margin-top:8px}
+.spark{display:block;width:100%;height:auto}
+.wtable{padding:0 0 12px;font-size:12.5px}
+.wtable .wr{display:grid;grid-template-columns:52px 1fr auto;gap:8px;padding:6px 0;border-top:1px solid var(--line2);align-items:baseline}
+.wtable .wk{font-family:"IBM Plex Mono",monospace;color:var(--ink3)}
+.wtable .wv{font-family:"IBM Plex Mono",monospace;font-weight:600;text-align:right}
+.wtable .wn{color:var(--ink2);min-width:0;overflow-wrap:anywhere}
+.secthead{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+
+/* ---- timers ---- */
+.timers{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.trow{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.tstart{display:inline-flex;align-items:center;gap:7px;min-height:42px;padding:0 12px;border-radius:10px;
+  border:1px solid var(--accentLine);background:var(--accentSoft);color:var(--ink);
+  font-size:13px;font-weight:600;cursor:pointer;text-align:left}
+.tstart:hover{border-color:var(--accent)}
+.tstart svg{flex:none;color:var(--accent)}
+.tstart .sub{font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:500;color:var(--ink3);margin-left:5px}
+.tstart.is-running{background:var(--accent);border-color:var(--accent);color:var(--accentInk)}
+.tstart.is-running svg,.tstart.is-running .sub{color:var(--accentInk)}
+.tflag{display:inline-flex;vertical-align:-2px;margin-left:6px;color:var(--ink3)}
+
+/* ---- running timer bar ---- */
+.timerbar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--surface);
+  border-top:1px solid var(--line);box-shadow:0 -10px 30px -20px rgba(0,0,0,.6)}
+.timerbar[hidden]{display:none}
+.tprog{height:3px;background:var(--line2)}
+.tprog span{display:block;height:100%;width:0;background:var(--accent);transition:width .2s linear}
+.timerbar.is-rest .tprog span,.timerbar.is-paused .tprog span{background:var(--ink3)}
+.tin{max-width:560px;margin:0 auto;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));
+  display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"meta clock" "ctl ctl";
+  gap:2px 12px;align-items:center}
+.tmeta{grid-area:meta;min-width:0}
+.tdrill{font-size:11.5px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tphase{font-family:Archivo,sans-serif;font-size:17px;font-weight:700;letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.timerbar.is-work .tphase{color:var(--accent)}
+.tclock{grid-area:clock;font-family:"IBM Plex Mono",monospace;font-size:31px;font-weight:600;line-height:1;
+  font-variant-numeric:tabular-nums}
+.tctl{grid-area:ctl;display:flex;gap:7px;margin-top:8px}
+.tbtn{flex:1;min-height:42px;border:1px solid var(--line);background:var(--surface);border-radius:10px;
+  font-size:13.5px;font-weight:600;cursor:pointer;color:var(--ink2)}
+.tbtn:hover{border-color:var(--accentLine);color:var(--ink)}
+.tbtn.pri{background:var(--accent);border-color:var(--accent);color:var(--accentInk)}
+.tbtn.ic{flex:0 0 46px;font-family:"IBM Plex Mono",monospace;font-size:13px}
+.tbtn.off{color:var(--ink3)}
+body.has-timer .wrap{padding-bottom:200px}
+body.has-timer .daysave{bottom:112px}
+</style>
+
+<script>
+"use strict";
+/* ============ LOG SPEC — one entry per key work ============
+   Fields follow the Climb 5.12 tracking log sheets and the Exercise List.
+   Excluded from logging: On the Wall Mobility, Route Cool Down,
+   Rhythm Cool Down, Hangboard Warm Up, Rest.
+============================================================ */
+var EDGES=["20 mm","18 mm","16 mm","14 mm","12 mm"];
+var LOADS=["-20 lb assist","-10 lb assist","Bodyweight","+5 lb","+10 lb","+15 lb","+20 lb"];
+var RATE={
+  finger:["Tweaky","Achy","Normal","Good","Great"],
+  flex:["Locked up","Tight","Normal","Loose","Great"],
+  move:["Sloppy","Okay","Solid","Sharp","Dialed"]
+};
+var RPE_OPTS=["4","5","6","7","8","9","10"];
+var TACTIC=["Bolt to bolt","Links","Overlaps","High / low point","Redpoint attempts","Sent"];
+var BPROG=["Working moves","Linked sections","One hang away","Sent"];
+var UDU=["Up only","Up + down","Up, down, part way up","Full up-down-up","Full UDU with room to spare"];
+
+function F(kind,k,label,extra){var o={kind:kind,k:k,label:label};if(extra)for(var x in extra)o[x]=extra[x];return o;}
+function num(k,l,ph){return F("num",k,l,{ph:ph||""});}
+function txt(k,l,ph){return F("text",k,l,{ph:ph||""});}
+function grd(k,l,scale){return F("grade",k,l,{scale:scale});}
+function rate(k,l,scale){return F("rate",k,l,{scale:scale});}
+function pick(k,l,opts){return F("pick",k,l,{opts:opts});}
+function chips(k,l,opts){return F("chips",k,l,{opts:opts});}
+function notesF(){return F("notes","notes","Notes");}
+function head(label){return F("head","h_"+label.replace(/[^A-Za-z0-9]/g,""),label);}
+function slug(x){return String(x).replace(/[^A-Za-z0-9]/g,"");}
+function exName(item){return String(item).split(":")[0].trim();}
+function M(k,label,kind,extra){var o={k:k,label:label,kind:kind||"num"};if(extra)for(var x in extra)o[x]=extra[x];return o;}
+
+var MOVE_FIELDS=[num("problems","Problems"),rate("quality","Movement quality","move"),notesF()];
+var MOVE_METRIC=[M("quality","Movement quality","rate",{scale:"move",agg:"avg"})];
+
+var LOG_SPEC={
+"Climbing Movement Prep":{
+  fields:[rate("fingerHealth","Finger health","finger"),rate("flexibility","Flexibility","flex"),notesF()],
+  metrics:[M("fingerHealth","Finger health","rate",{scale:"finger",agg:"avg"}),
+           M("flexibility","Flexibility","rate",{scale:"flex",agg:"avg"})]},
+"Route Warm Up (Pacing)":{
+  fields:[txt("name","Route","Orange Wave"),grd("grade","Grade","lead"),
+          rate("quality","Pacing quality","move"),notesF()],
+  metrics:[M("quality","Pacing quality","rate",{scale:"move",agg:"avg",ctx:["grade"]})]},
+"Route Mini Project":{
+  fields:[txt("name","Route","Orange Wave"),grd("grade","Grade","lead"),num("attempts","Attempts"),
+          pick("step","Tactical step reached",TACTIC),notesF()],
+  metrics:[M("step","Tactical step","pick",{opts:TACTIC,agg:"max"})]},
+"Route Project":{
+  fields:[txt("name","Route","Orange Wave"),grd("grade","Grade","lead"),num("attempts","Attempts"),
+          pick("step","Tactical step reached",TACTIC),notesF()],
+  metrics:[M("step","Tactical step","pick",{opts:TACTIC,agg:"max"})]},
+"UDU (Up, Down, Up) Project":{
+  fields:[txt("name","Route"),grd("grade","Grade","lead"),num("attempts","Attempts"),
+          pick("result","Best result",UDU),notesF()],
+  metrics:[M("result","Best result","pick",{opts:UDU,agg:"max"})]},
+"Steep Laps":{
+  fields:[txt("name","Route"),grd("grade","Grade","lead"),num("laps","Laps completed"),notesF()],
+  metrics:[M("laps","Laps completed","num",{unit:"laps",agg:"max"})]},
+"Vert Laps":{
+  fields:[txt("name","Route"),grd("grade","Grade","lead"),num("laps","Laps completed"),notesF()],
+  metrics:[M("laps","Laps completed","num",{unit:"laps",agg:"max"})]},
+"Route Crux Intervals":{
+  fields:[txt("name","Route"),grd("grade","Grade","lead"),num("sets","Sets completed"),
+          num("tops","Routes finished on the 4th rep"),notesF()],
+  metrics:[M("sets","Sets completed","num",{unit:"sets",agg:"max"}),
+           M("tops","Routes finished","num",{unit:"tops",agg:"max"})]},
+"Max Hangs (7 On/53 Off)":{
+  fields:[chips("edgeSize","Edge size",EDGES),chips("load","Load / assist",LOADS),notesF()],
+  metrics:[M("edgeSize","Edge size","pick",{opts:EDGES,agg:"max",ctx:["load"]}),
+           M("load","Load / assist","pick",{opts:LOADS,agg:"max",ctx:["edgeSize"]})]},
+"Minimum Edge Hangs (7 On/53 Off)":{
+  fields:[chips("edgeSize","Edge size",EDGES),chips("load","Load / assist",LOADS),notesF()],
+  metrics:[M("edgeSize","Edge size","pick",{opts:EDGES,agg:"max",ctx:["load"]}),
+           M("load","Load / assist","pick",{opts:LOADS,agg:"max",ctx:["edgeSize"]})]},
+"Find the Minimum Edge":{
+  fields:[chips("edgeSize","Smallest edge held",EDGES),num("seconds","Seconds held"),notesF()],
+  metrics:[M("seconds","Seconds held","num",{unit:"sec",agg:"max",ctx:["edgeSize"]})]},
+"One Touch":{
+  fields:[txt("name","Problem","Cave Exit"),grd("grade","Grade","boulder"),
+          rate("quality","Movement quality","move"),notesF()],
+  metrics:[M("quality","Movement quality","rate",{scale:"move",agg:"avg",ctx:["grade"]})]},
+"Hip Shapes":{fields:MOVE_FIELDS,metrics:MOVE_METRIC},
+"Jump Practice":{
+  fields:[num("minutes","Minutes"),rate("quality","Movement quality","move"),notesF()],
+  metrics:[M("quality","Movement quality","rate",{scale:"move",agg:"avg"})]},
+"Perfect Repeat":{
+  fields:[txt("name","Problem","Cave Exit"),grd("grade","Grade","boulder"),
+          rate("quality","Movement quality","move"),notesF()],
+  metrics:[M("quality","Movement quality","rate",{scale:"move",agg:"avg",ctx:["grade"]})]},
+"Three Strike Newcomers":{
+  fields:[num("problems","Problems attempted"),num("sends","Sends"),grd("topGrade","Hardest sent","boulder"),notesF()],
+  metrics:[M("sends","Sends","num",{unit:"sends",agg:"max",ctx:["topGrade"]})]},
+"Three Strike Repeat Circuit":{
+  fields:[num("problems","Problems attempted"),num("sends","Sends"),grd("topGrade","Hardest sent","boulder"),notesF()],
+  metrics:[M("sends","Sends","num",{unit:"sends",agg:"max",ctx:["topGrade"]})]},
+"Boulder Mini Project":{
+  fields:[txt("name","Boulder","Cave Exit"),grd("grade","Grade","boulder"),num("attempts","Attempts"),
+          pick("step","Progress",BPROG),notesF()],
+  metrics:[M("step","Progress","pick",{opts:BPROG,agg:"max"})]},
+"Single Session Sends":{
+  fields:[num("sends","Sends"),grd("topGrade","Hardest sent","boulder"),notesF()],
+  metrics:[M("sends","Sends","num",{unit:"sends",agg:"max",ctx:["topGrade"]})]},
+"Limit Bouldering":{
+  fields:[num("minutes","Minutes"),grd("topGrade","Hardest sequence","boulder"),
+          rate("quality","Movement quality","move"),notesF()],
+  metrics:[M("quality","Movement quality","rate",{scale:"move",agg:"avg"}),
+           M("minutes","Minutes","num",{unit:"min",agg:"max"})]},
+"Superset 1":{superset:true},
+"Superset 2":{superset:true},
+"Superset 3":{superset:true}
+};
+var NO_LOG={"On the Wall Mobility":1,"Route Cool Down":1,"Rhythm Cool Down":1,
+             "Hangboard Warm Up":1,"Rest":1,"Route Warm Up":1,
+             "Contrast Warm Up (aka Sloth Monkeys)":1,"Hovers (Before and After)":1};
+
+/* A superset logs every exercise in it, so its spec is built from the step's own
+   item list rather than a fixed table. Rounds are the superset's; reps and load
+   are per exercise, keyed by a slug of the exercise name so the keys are stable
+   across weeks even as the prescription changes. */
+function isHold(item){return /\d+\s*sec/.test(item);}
+function supersetSpec(step){
+  var fields=[],metrics=[];
+  (step.items||[]).forEach(function(it){
+    var nm=exName(it),k=slug(nm),pre={};
+    fields.push(head(nm));
+    if(isHold(it)){
+      /* a hold is measured in time, so seconds replace reps and load */
+      fields.push(num("secs_"+k,"Seconds held"));
+      fields.push(chips("rpe_"+k,"RPE",RPE_OPTS));
+      pre["rpe_"+k]="RPE ";
+      metrics.push(M("secs_"+k,nm,"num",{unit:"sec",agg:"max",
+        ctx:["rpe_"+k],ctxPre:pre}));
+    }else{
+      fields.push(num("reps_"+k,"Reps"));
+      fields.push(txt("load_"+k,"Load / progression","Bodyweight"));
+      fields.push(chips("rpe_"+k,"RPE",RPE_OPTS));
+      pre["rpe_"+k]="RPE ";
+      metrics.push(M("reps_"+k,nm,"num",{unit:"reps",agg:"max",
+        ctx:["load_"+k,"rpe_"+k],ctxPre:pre}));
+    }
+  });
+  return {fields:fields,metrics:metrics};
+}
+var SS_CACHE={};
+function specFor(n,step){
+  if(NO_LOG[n]) return null;
+  var base=LOG_SPEC[n]; if(!base) return null;
+  if(!base.superset) return base;
+  if(!step||!step.items) return null;
+  var key=n+"|"+step.items.join("|");
+  return SS_CACHE[key]||(SS_CACHE[key]=supersetSpec(step));
+}
+</script>
+
+<script>
+"use strict";
+/* ====================== APP ====================== */
+var DATA_PATH="data/climb512.logs.v1.json";
+var ROW={}; PLAN_ROWS.forEach(function(r){ROW[r[0]]=r;});
+var LEAD_GRADES=["5.8","5.9","5.10a","5.10b","5.10c","5.10d","5.11a","5.11b","5.11c","5.11d","5.12a","5.12b","5.12c","5.12d"];
+var BOULDER_GRADES=["V0","V1","V2","V3","V4","V5","V6","V7","V8"];
+var MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+var data={version:2,choices:{},logs:{},prefs:{},savedAt:"",pendingSync:false};
+var state={view:"plan",date:null,month:null,calOpen:true,open:{},draft:null,dirty:false,openTrend:null};
+var artifactApi=null,downloadsApi=null;
+
+/* Capability handles resolve asynchronously and can take seconds on a phone.
+   Anything that needs them waits on capReady instead of reading a null. */
+var capReady=(function(){
+  if(!(window.claude&&typeof window.claude.use==="function")) return Promise.resolve();
+  var got=Promise.all([
+    window.claude.use("artifact").then(function(a){artifactApi=a;},function(){}),
+    window.claude.use("downloads").then(function(d){downloadsApi=d;},function(){})
+  ]);
+  var cap=new Promise(function(res){setTimeout(res,12000);});
+  return Promise.race([got,cap]).then(function(){});
+})();
+
+/* ---------- dates ---------- */
+function pad(n){return n<10?"0"+n:""+n;}
+function todayKey(){var d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
+function parseKey(s){var p=s.split("-");return new Date(Date.UTC(+p[0],+p[1]-1,+p[2]));}
+function keyOf(d){return d.getUTCFullYear()+"-"+pad(d.getUTCMonth()+1)+"-"+pad(d.getUTCDate());}
+function addDays(s,n){var d=parseKey(s);d.setUTCDate(d.getUTCDate()+n);return keyOf(d);}
+function longDate(s){var d=parseKey(s);
+  return ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][d.getUTCDay()]+
+    ", "+MONTHS[d.getUTCMonth()]+" "+d.getUTCDate();}
+function shortDate(s){var d=parseKey(s);return MONTHS[d.getUTCMonth()].slice(0,3)+" "+d.getUTCDate();}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){
+  return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+
+/* ---------- schedule, with the weekly B / D choice ---------- */
+var SWAPPABLE={routeProj:1,boulderPow:1};
+function baseLabel(base,phaseKey){
+  var n = base==="routeProj" ? "Route Project" : "Boulder Power";
+  return /d$/.test(phaseKey) ? n+" (Deload)" : n;
+}
+function chosenBase(week,fallback){
+  var c=data.choices&&data.choices[week];
+  return (c==="routeProj"||c==="boulderPow") ? c : fallback;
+}
+function dayInfo(k){
+  var r=ROW[k];
+  if(r){
+    var base=r[3],label=r[4],swap=!!SWAPPABLE[base];
+    if(swap){base=chosenBase(r[1],r[3]);label=baseLabel(base,r[2]);}
+    return {kind:"plan",date:k,week:r[1],phaseKey:r[2],base:base,label:label,swappable:swap,defaultBase:r[3]};
+  }
+  if(k<PLAN_START) return {kind:"before",date:k};
+  if(k>=PEAK_START&&k<=PEAK_END) return {kind:"peak",date:k};
+  return {kind:"after",date:k};
+}
+function dotColor(k){
+  var i=dayInfo(k);
+  if(i.kind==="peak") return "var(--peak)";
+  if(i.kind!=="plan"||i.base==="rest") return "var(--muted)";
+  return PHASES[i.phaseKey].color;
+}
+function stepsFor(i){
+  if(i.kind!=="plan") return null;
+  return TPL[i.base][i.phaseKey](i.week);
+}
+
+/* ---------- persistence ---------- */
+function migrate(d){
+  if(!d||typeof d!=="object") return {version:2,choices:{},logs:{},prefs:{}};
+  if(typeof d.logs!=="object"||!d.logs) d.logs={};
+  if(typeof d.prefs!=="object"||!d.prefs) d.prefs={};
+  if(typeof d.choices!=="object"||!d.choices) d.choices={};
+  Object.keys(d.logs).forEach(function(k){
+    var s=d.logs[k];
+    if(!s||typeof s!=="object"){delete d.logs[k];return;}
+    if(!s.entries||typeof s.entries!=="object") s.entries={};
+    if(Array.isArray(s.workItems)&&s.workItems.length){ s.legacy=s.workItems; }
+    delete s.workItems; delete s.warmupQuality; delete s.rpe;
+    if(s.hangboard){
+      var hb=s.hangboard;
+      if(!s.entries["Max Hangs (7 On/53 Off)"]&&!s.entries["Minimum Edge Hangs (7 On/53 Off)"]&&(hb.repsCompleted||hb.edgeSize||hb.load)){
+        var nm=(dayInfo(k).phaseKey||"p1").indexOf("p3")===0?"Minimum Edge Hangs (7 On/53 Off)":"Max Hangs (7 On/53 Off)";
+        s.entries[nm]={reps:hb.repsCompleted||"",edgeSize:hb.edgeSize||"",load:hb.load||"",notes:""};
+      }
+      delete s.hangboard;
+    }
+  });
+  d.version=2;
+  return d;
+}
+/* ---- device store: this browser, works with no capabilities at all ---- */
+var LS_KEY="climb512.data.v2";
+var lsOK=true;
+function lsRead(){
+  try{var raw=localStorage.getItem(LS_KEY);return raw?migrate(JSON.parse(raw)):null;}
+  catch(e){lsOK=false;return null;}
+}
+function lsWrite(d){
+  try{localStorage.setItem(LS_KEY,JSON.stringify(d));lsOK=true;return true;}
+  catch(e){lsOK=false;return false;}
+}
+
+/* ---- cloud copy: the data file published inside this artifact ---- */
+var remoteState="unknown"; /* unknown | ok | empty | error */
+/* Self-hosted build: the browser store is the only store. There is no cloud
+   copy to fetch or publish to, so this resolves empty and persist() never runs. */
+function fetchRemote(){ remoteState="empty"; return Promise.resolve(null); }
+
+/* Newest write wins, per day. Deleted days are kept as empty records so a
+   deletion on one device is not resurrected by an older copy on another. */
+function mergeData(remote,local){
+  if(!remote&&!local) return {version:2,choices:{},logs:{},prefs:{},savedAt:"",pendingSync:false};
+  if(!remote) return local;
+  if(!local) return remote;
+  var rs=remote.savedAt||"",ls=local.savedAt||"",top=ls>rs?local:remote;
+  var out={version:2,choices:top.choices||{},prefs:top.prefs||{},logs:{},
+           savedAt:(ls>rs?ls:rs),pendingSync:!!local.pendingSync};
+  var keys={};
+  Object.keys(remote.logs||{}).forEach(function(k){keys[k]=1;});
+  Object.keys(local.logs||{}).forEach(function(k){keys[k]=1;});
+  Object.keys(keys).forEach(function(k){
+    var a=remote.logs[k],b=local.logs[k];
+    if(!a){out.logs[k]=b;return;}
+    if(!b){out.logs[k]=a;return;}
+    out.logs[k]=((b.updatedAt||"")>=(a.updatedAt||""))?b:a;
+  });
+  return out;
+}
+function loadData(){
+  var local=lsRead();
+  return fetchRemote().then(function(remote){
+    var d=mergeData(remote,local);
+    /* the merged view is what this device should hold from now on */
+    if(remote&&local) lsWrite(d);
+    return d;
+  });
+}
+
+/* Publishing the data file. Refuses to publish over a cloud copy we could not
+   read, so a failed fetch never wipes sessions logged on another device. */
+function persist(){
+  if(!artifactApi) return Promise.reject({code:"capability_disabled"});
+  var pre=(remoteState==="error")
+    ? fetchRemote().then(function(r){if(r) data=mergeData(r,data);})
+    : Promise.resolve();
+  return pre.then(function(){
+    if(remoteState==="error") return Promise.reject({code:"remote_unreadable"});
+    return artifactApi.publish({"data/climb512.logs.v1.json":
+      {content:JSON.stringify(data),contentType:"application/json"}});
+  });
+}
+
+/* Every write lands on this device first, then syncs to the cloud copy if the
+   viewer allows it. Returns a promise resolving "synced" | "device" | "none". */
+function saveAll(){
+  data.savedAt=new Date().toISOString();
+  data.pendingSync=true;
+  var localOK=lsWrite(data);
+  return capReady.then(function(){
+    if(!artifactApi) return localOK?"device":Promise.reject({code:"capability_disabled"});
+    data.pendingSync=false;
+    return persist().then(function(){
+      lsWrite(data); return "synced";
+    },function(err){
+      data.pendingSync=true; lsWrite(data);
+      if(localOK) return "device";
+      return Promise.reject(err||{});
+    });
+  }).then(function(r){paintStorage();return r;},function(e){paintStorage();throw e;});
+}
+
+var prefTimer=null;
+function savePrefsSoon(){
+  clearTimeout(prefTimer);
+  prefTimer=setTimeout(function(){saveAll().catch(function(){});},4000);
+}
+
+/* ---- storage status line ---- */
+function loggedDayCount(){
+  return Object.keys(data.logs).filter(function(k){
+    return Object.keys(data.logs[k].entries||{}).length;}).length;
+}
+function paintStorage(){
+  var el=document.getElementById("storeLine"),btn=document.getElementById("btnSync");
+  if(!el) return;
+  var txt;
+  if(!lsOK){
+    txt="This browser is blocking storage — most likely a private window. Open this page in a normal tab, or export after every session.";
+  }else{
+    var n=loggedDayCount();
+    txt="Saved in this browser on this device: "+n+" logged day"+(n===1?"":"s")+". "+
+        "Nothing leaves the phone. Use Export here and Import there to move logs to another device, "+
+        "and add this page to your home screen so the browser keeps the data.";
+  }
+  el.textContent=txt;
+  if(btn) btn.hidden=true;
+}
+
+function applyTheme(){
+  var t=data.prefs.theme;
+  if(t==="dark"||t==="light") document.documentElement.setAttribute("data-theme",t);
+  else document.documentElement.removeAttribute("data-theme");
+  var tb=document.getElementById("btnTheme");
+  tb.setAttribute("aria-label","Theme: "+(t==="dark"?"dark":t==="light"?"light":"follow system"));
+  tb.style.color = t ? "var(--accent)" : "var(--ink2)";
+}
+
+/* ---------- calendar ---------- */
+function renderCal(){
+  var d=parseKey(state.month+"-01");
+  document.getElementById("monthLabel").textContent=MONTHS[d.getUTCMonth()]+" "+d.getUTCFullYear();
+  var first=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),1));
+  var start=new Date(first); start.setUTCDate(1-first.getUTCDay());
+  var tk=todayKey(),html="";
+  for(var i=0;i<42;i++){
+    var c=new Date(start); c.setUTCDate(start.getUTCDate()+i);
+    var k=keyOf(c),out=(c.getUTCMonth()!==first.getUTCMonth());
+    var cls="day"+(out?" out":"")+(k===tk?" is-today":"")+(k===state.date?" is-selected":"");
+    html+='<button type="button" class="'+cls+'" data-day="'+k+'" aria-label="'+esc(longDate(k))+'">'+
+      "<span>"+c.getUTCDate()+'</span><span class="dot" style="background:'+dotColor(k)+'"></span></button>';
+  }
+  document.getElementById("calGrid").innerHTML=html;
+}
+
+/* ---------- entry helpers ---------- */
+function entryFilled(e){
+  if(!e) return false;
+  return Object.keys(e).some(function(k){return k!=="notes"&&e[k]!==""&&e[k]!=null;});
+}
+function draftFor(k){
+  if(state.draft&&state.draft.date===k) return state.draft;
+  var log=data.logs[k];
+  state.draft={date:k,entries:log&&log.entries?JSON.parse(JSON.stringify(log.entries)):{}};
+  state.dirty=false;
+  return state.draft;
+}
+function ent(name){
+  var d=state.draft;
+  if(!d.entries[name]) d.entries[name]={};
+  return d.entries[name];
+}
+function metricValue(m,e){
+  if(!e) return null;
+  var v=e[m.k];
+  if(v===""||v==null) return null;
+  if(m.kind==="rate") return RATE[m.scale].indexOf(v)+1 || null;
+  if(m.kind==="pick") return m.opts.indexOf(v)+1 || null;
+  var n=Number(v); return isNaN(n)?null:n;
+}
+function metricLabel(m,val){
+  if(val==null) return "—";
+  if(m.kind==="rate") return RATE[m.scale][Math.round(val)-1]||String(val);
+  if(m.kind==="pick") return m.opts[Math.round(val)-1]||String(val);
+  var s=(Math.round(val*10)/10);
+  return s+(m.unit?" "+m.unit:"");
+}
+</script>
+
+<script>
+"use strict";
+/* ====================== TIMERS ======================
+   Interval, rest and time-box timers for the timed key work.
+   Every duration here comes from the plan itself — a drill gets
+   a timer only where the session or the Exercise List names one.
+   Phases: {label, sec, mode:"down"|"up", tone, round, of}
+====================================================== */
+
+function mmss(sec){sec=Math.max(0,Math.round(sec));var m=Math.floor(sec/60),s=sec%60;return m+":"+(s<10?"0"+s:s);}
+function nOf(str,re){var m=re.exec(str||"");return m?+m[1]:0;}
+function PH(label,sec,mode,tone,round,of){
+  return {label:label,sec:sec,mode:mode,tone:tone,round:round||0,of:of||0};
+}
+function progHangs(reps){
+  var p=[PH("Get set",10,"down","ready")];
+  for(var i=1;i<=reps;i++){
+    p.push(PH("Hang",7,"down","work",i,reps));
+    if(i<reps) p.push(PH("Rest",53,"down","rest",i,reps));
+  }
+  return p;
+}
+function progSets(rounds,restSec,word){
+  var p=[];
+  for(var i=1;i<=rounds;i++){
+    p.push(PH(word,0,"up","work",i,rounds));
+    if(i<rounds) p.push(PH("Rest",restSec,"down","rest",i,rounds));
+  }
+  return p;
+}
+function progHold(label,sec){return [PH("Get set",5,"down","ready"),PH(label,sec,"down","work")];}
+function progOne(label,sec,tone){return [PH(label,sec,"down",tone||"rest")];}
+function TP(label,sub,phases){return {label:label,sub:sub,phases:phases};}
+
+var NO_HOLD_TIMER={"Two Arm Active Hang":1};
+var T_ATTEMPT={"Route Project":[900,1200],"UDU (Up, Down, Up) Project":[300,600]};
+
+function timersFor(s){
+  var n=s.n,q=s.q||"",out=[],i;
+  if(n.indexOf("Max Hangs")===0||n.indexOf("Minimum Edge Hangs")===0){
+    var reps=nOf(q,/(\d+)\s*hang/)||5;
+    out.push(TP(reps+" hangs","7 on / 53 off",progHangs(reps)));
+  }else if(n==="Find the Minimum Edge"){
+    out.push(TP("Edge test","12 s hang",progHold("Hang",12)));
+    out.push(TP("Rest","2:30 between attempts",progOne("Rest",150)));
+  }else if(n==="Rest"){
+    var r=nOf(q,/(\d+)\s*min/);
+    if(r) out.push(TP("Rest",mmss(r*60),progOne("Rest",r*60)));
+  }else if(n.indexOf("Superset")===0){
+    var sets=nOf(q,/(\d+)\s*sets?/)||2,srest=(nOf(q,/(\d+)\s*min rest/)||2)*60;
+    out.push(TP(sets+" sets",mmss(srest)+" rest between",progSets(sets,srest,"Set")));
+    (s.items||[]).forEach(function(it){
+      var nm=it.split(":")[0].trim();
+      if(NO_HOLD_TIMER[nm]) return;
+      var sec=nOf(it,/(\d+)\s*sec/); if(!sec) return;
+      out.push(TP(nm,sec+" s hold",progHold(nm,sec)));
+    });
+  }else if(n==="Steep Laps"){
+    var laps=nOf(q,/(\d+)\s*laps?/)||3,lrest=(nOf(q,/(\d+)\s*min rest/)||2)*60;
+    out.push(TP(laps+" laps",mmss(lrest)+" rest between",progSets(laps,lrest,"Lap")));
+  }else if(n==="Route Crux Intervals"){
+    var cs=nOf(q,/(\d+)\s*sets?,/)||nOf(q,/(\d+)\s*sets?/)||1,crest=(nOf(q,/(\d+)\s*min rest/)||15)*60;
+    out.push(TP(cs+(cs===1?" set":" sets"),mmss(crest)+" rest between",progSets(cs,crest,"Set")));
+  }else if(n==="Three Strike Repeat Circuit"||n==="Three Strike Newcomers"){
+    out.push(TP("Rest","3:00 between attempts",progOne("Rest",180)));
+  }
+  if(T_ATTEMPT[n]) T_ATTEMPT[n].forEach(function(sec){
+    out.push(TP("Rest",mmss(sec)+" between attempts",progOne("Rest",sec)));
+  });
+  if(n==="Boulder Mini Project") out.push(TP("Rest","5:00 between efforts",progOne("Rest",300)));
+  return out;
+}
+
+/* ---------- sound ---------- */
+var AC=null;
+function sndOn(){return !(data&&data.prefs&&data.prefs.timerSound===false);}
+function audioPrime(){
+  try{
+    if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==="suspended") AC.resume();
+  }catch(e){AC=null;}
+}
+function tone(freq,dur,vol,delay){
+  if(!AC||!sndOn()) return;
+  try{
+    var t0=AC.currentTime+(delay||0),o=AC.createOscillator(),g=AC.createGain();
+    o.type="sine"; o.frequency.value=freq; o.connect(g); g.connect(AC.destination);
+    g.gain.setValueAtTime(0.0001,t0);
+    g.gain.exponentialRampToValueAtTime(vol||0.3,t0+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+    o.start(t0); o.stop(t0+dur+0.03);
+  }catch(e){}
+}
+function buzz(pat){try{if(sndOn()&&navigator.vibrate)navigator.vibrate(pat);}catch(e){}}
+function cue(kind){
+  if(kind==="work"){tone(1245,0.28,0.34);buzz([140]);}
+  else if(kind==="rest"){tone(560,0.22,0.26);buzz([60]);}
+  else if(kind==="ready"){tone(760,0.12,0.2);}
+  else if(kind==="block"){tone(700,0.16,0.24);}
+  else if(kind==="tick"){tone(940,0.06,0.2);}
+  else if(kind==="done"){tone(660,0.16,0.3,0);tone(880,0.16,0.3,0.18);tone(1175,0.34,0.3,0.36);buzz([90,70,90]);}
+}
+
+/* ---------- engine ---------- */
+var T={on:false,phases:null,i:0,endAt:0,startAt:0,paused:false,held:0,key:"",drill:"",title:"",tick:null,warn:99,wake:null};
+
+function wakeOn(){
+  try{
+    if(!navigator.wakeLock||T.wake) return;
+    navigator.wakeLock.request("screen").then(function(w){
+      T.wake=w; w.addEventListener("release",function(){T.wake=null;});
+    }).catch(function(){});
+  }catch(e){}
+}
+function wakeOff(){try{if(T.wake){T.wake.release();T.wake=null;}}catch(e){}}
+function tEl(id){return document.getElementById(id);}
+
+function timerStart(preset,drill,key){
+  timerHalt();
+  T.on=true; T.phases=preset.phases; T.i=0; T.key=key; T.drill=drill; T.title=preset.label;
+  document.body.classList.add("has-timer");
+  tEl("timerBar").hidden=false;
+  audioPrime();
+  phaseEnter();
+  T.tick=setInterval(timerTick,200);
+  wakeOn();
+}
+function phaseEnter(){
+  var p=T.phases[T.i],now=Date.now();
+  T.paused=false; T.warn=99; T.held=0;
+  if(p.mode==="down") T.endAt=now+p.sec*1000; else T.startAt=now;
+  cue(p.tone);
+  paintTimer();
+  syncTimerButtons();
+}
+function timerNext(){
+  if(!T.on) return;
+  if(T.i>=T.phases.length-1){timerDone();return;}
+  T.i++; phaseEnter();
+}
+function timerTick(){
+  if(!T.on||T.paused) return;
+  var p=T.phases[T.i];
+  if(p.mode==="down"){
+    var left=(T.endAt-Date.now())/1000, ci=Math.ceil(left);
+    if(ci<=3&&ci>=1&&ci<T.warn){T.warn=ci;cue("tick");}
+    if(left<=0){timerNext();return;}
+  }
+  paintTimer();
+}
+function timerDone(){
+  cue("done");
+  T.on=false; clearInterval(T.tick); T.tick=null; wakeOff();
+  var bar=tEl("timerBar");
+  bar.className="timerbar is-done";
+  tEl("tPhase").textContent="Complete";
+  tEl("tDrill").textContent=T.drill+" · "+T.title;
+  tEl("tClock").textContent="0:00";
+  tEl("tFill").style.width="100%";
+  var main=tEl("tMain"); main.textContent="Close"; main.className="tbtn pri";
+  syncTimerButtons();
+  setTimeout(function(){if(!T.on) timerHalt();},20000);
+}
+function timerHalt(){
+  T.on=false; T.key=""; T.phases=null;
+  if(T.tick){clearInterval(T.tick);T.tick=null;}
+  wakeOff();
+  var bar=tEl("timerBar");
+  if(bar){bar.hidden=true;bar.className="timerbar";}
+  document.body.classList.remove("has-timer");
+  syncTimerButtons();
+}
+function paintTimer(){
+  var p=T.phases&&T.phases[T.i]; if(!p) return;
+  var now=Date.now(),frac=0,shown;
+  if(p.mode==="down"){
+    var left=T.paused?T.held:(T.endAt-now)/1000;
+    shown=mmss(left);
+    frac=p.sec?1-Math.max(0,Math.min(left,p.sec))/p.sec:1;
+  }else{
+    shown=mmss(T.paused?T.held:(now-T.startAt)/1000);
+  }
+  tEl("timerBar").className="timerbar is-"+(p.tone==="work"?"work":p.tone==="rest"?"rest":"ready")+(T.paused?" is-paused":"");
+  tEl("tFill").style.width=(Math.max(0,Math.min(1,frac))*100).toFixed(1)+"%";
+  tEl("tClock").textContent=shown;
+  tEl("tPhase").textContent=p.label+(p.of?" · "+p.round+" of "+p.of:"")+(T.paused?" (paused)":"");
+  tEl("tDrill").textContent=T.drill+" · "+T.title;
+  var main=tEl("tMain");
+  main.textContent=p.mode==="up"?"Done":(T.paused?"Resume":"Pause");
+  main.className="tbtn"+(p.mode==="up"||T.paused?" pri":"");
+}
+function syncTimerButtons(){
+  var all=document.querySelectorAll(".tstart");
+  for(var i=0;i<all.length;i++){
+    var on=T.on&&all[i].getAttribute("data-tkey")===T.key;
+    all[i].classList.toggle("is-running",on);
+    all[i].setAttribute("aria-pressed",on?"true":"false");
+  }
+}
+function timerToggle(preset,drill,key){
+  if(T.on&&T.key===key) timerHalt(); else timerStart(preset,drill,key);
+}
+function paintSound(){
+  var b=tEl("tSound"); if(!b) return;
+  var on=sndOn();
+  b.className="tbtn ic"+(on?"":" off");
+  b.setAttribute("aria-label",on?"Mute timer sounds":"Unmute timer sounds");
+  b.textContent=on?"♪":"✕♪";
+}
+</script>
+
+<script>
+"use strict";
+/* ---------- field rendering ---------- */
+function fieldHTML(drill,f,e){
+  var id="f_"+drill.replace(/[^a-z0-9]/gi,"")+"_"+f.k;
+  if(f.kind==="head") return '<div class="exhead">'+esc(f.label)+"</div>";
+  var v=e[f.k]==null?"":e[f.k];
+  var h='<div class="field">';
+  if(f.kind==="rate"||f.kind==="pick"||f.kind==="chips"){
+    h+='<label id="'+id+'_l">'+esc(f.label)+"</label>";
+    var opts = f.kind==="rate" ? RATE[f.scale] : (f.kind==="pick" ? f.opts : f.opts);
+    h+='<div class="chips" role="group" aria-labelledby="'+id+'_l">';
+    opts.forEach(function(o){
+      h+='<button type="button" class="chipbtn" data-e="'+esc(drill)+'" data-k="'+f.k+'" data-val="'+esc(o)+
+         '" aria-pressed="'+(v===o?"true":"false")+'">'+esc(o)+"</button>";
+    });
+    h+="</div>";
+  }else if(f.kind==="grade"){
+    var scale=f.scale==="boulder"?BOULDER_GRADES:LEAD_GRADES;
+    h+='<label for="'+id+'">'+esc(f.label)+'</label><select class="dd" id="'+id+'" data-e="'+esc(drill)+'" data-k="'+f.k+'"><option value="">—</option>';
+    scale.forEach(function(g){h+='<option value="'+g+'"'+(v===g?" selected":"")+">"+g+"</option>";});
+    h+="</select>";
+  }else if(f.kind==="num"){
+    h+='<label for="'+id+'">'+esc(f.label)+'</label><input class="inp" id="'+id+'" type="number" inputmode="numeric" min="0" step="1" data-e="'+esc(drill)+'" data-k="'+f.k+'" value="'+esc(v)+'">';
+  }else{
+    h+='<label for="'+id+'">'+esc(f.label)+'</label><input class="inp" id="'+id+'" data-e="'+esc(drill)+'" data-k="'+f.k+'" value="'+esc(v)+'" placeholder="'+esc(f.ph||"")+'">';
+  }
+  return h+"</div>";
+}
+function badgeFor(name,e,spec){
+  if(!spec) return '<span class="badge na" aria-hidden="true"></span>';
+  var on=entryFilled(e);
+  return '<span class="badge'+(on?" on":"")+'" title="'+(on?"Logged":"Not logged yet")+'">'+(on?"✓":"")+"</span>";
+}
+
+/* ---------- day view ---------- */
+function chipHTML(text,color){return '<span class="chip" style="color:'+color+'"><span class="sw"></span>'+esc(text)+"</span>";}
+function renderDay(){
+  var k=state.date,i=dayInfo(k),h="",banner="",title="",sub="",body="",tpl=null;
+  var d=draftFor(k);
+
+  if(i.kind==="before"){
+    banner=chipHTML("Before training plan","var(--muted)");
+    title="Rest day";
+    sub="Nothing is scheduled — this date is before your 12-week plan begins on August 24, 2026.";
+  }else if(i.kind==="after"){
+    banner=chipHTML("After peak window","var(--muted)");
+    title="Rest day";
+    sub="The formal plan and the peak window both ended December 15, 2026. Nothing is scheduled.";
+  }else if(i.kind==="peak"){
+    banner=chipHTML("Peak Performance Window","var(--peak)");
+    title="Prioritize outdoor projecting";
+    sub="November 16 – December 15. The training block is done; this is the window to perform.";
+    body='<ul style="margin:10px 0 0;padding-left:18px;color:var(--ink2);font-size:14px">'+
+      "<li>Climb outdoors 2–3 days per week where conditions and partners allow.</li>"+
+      "<li>Warm up outside on easy terrain.</li>"+
+      "<li>Preserve maximum-effort attempts for projects, not gym volume.</li>"+
+      "<li>Use the gym only for light SST or mobility if recovery permits.</li></ul>";
+  }else{
+    var ph=PHASES[i.phaseKey];
+    banner=chipHTML("Week "+i.week,"var(--ink3)")+chipHTML(ph.short,ph.color);
+    tpl=stepsFor(i);
+    if(tpl.rest){
+      title="Rest day — nothing is scheduled";
+      sub="Full recovery day. No climbing, hangboard, or supplemental training. Prioritize sleep, hydration, and nutrition.";
+      if(/swap/.test(ROW[k][4])) sub+=" Swap this with Saturday if that fits your week better.";
+    }else{title=i.label;sub=ph.desc;}
+  }
+
+  h+='<div class="card">';
+  h+='<div class="banner">'+banner+"</div>";
+  if(i.swappable){
+    h+='<div class="switch" role="group" aria-label="Session for week '+i.week+'">'+
+       '<button type="button" data-base="routeProj" aria-pressed="'+(i.base==="routeProj")+'">Route Project</button>'+
+       '<button type="button" data-base="boulderPow" aria-pressed="'+(i.base==="boulderPow")+'">Boulder Power</button></div>'+
+       '<div class="switchnote">The book runs this slot as Route Project <em>or</em> Bouldering. Your pick applies to week '+i.week+'.</div>';
+  }
+  h+='<div class="pad"><div class="eyebrow">'+esc(shortDate(k))+"</div>"+
+     '<div class="datebig">'+esc(longDate(k))+"</div>"+
+     '<div class="sesstitle">'+esc(title)+"</div>"+
+     '<div class="phasedesc">'+esc(sub)+"</div>"+body;
+  if(tpl&&tpl.notes) tpl.notes.forEach(function(n){h+='<div class="note">'+esc(n)+"</div>";});
+  h+="</div>";
+
+  if(tpl&&tpl.steps.length){
+    var loggable=tpl.steps.filter(function(s){return specFor(s.n,s);}).length;
+    var done=tpl.steps.filter(function(s){return specFor(s.n,s)&&entryFilled(d.entries[s.n]);}).length;
+    h+='<div class="pad" style="padding-top:0"><div class="eyebrow" id="dayCount">'+
+       done+" of "+loggable+" key work logged</div></div>";
+    h+='<ol class="steps">';
+    tpl.steps.forEach(function(s,idx){
+      var oid=k+"|"+idx,isOpen=!!state.open[oid],spec=specFor(s.n,s),e=d.entries[s.n]||{};
+      var tms=timersFor(s);
+      h+="<li>"+
+        '<button type="button" class="stepbtn" data-step="'+esc(oid)+'" aria-expanded="'+(isOpen?"true":"false")+'">'+
+        '<span class="stepnum">'+(idx+1)+"</span>"+
+        '<span class="stepmain"><span class="stepname">'+esc(s.n)+(tms.length?'<span class="tflag"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7v5.4l3.4 2\" stroke-linecap=\"round\"/></svg></span>':"")+"</span>"+
+        (s.q?'<span class="stepq">'+esc(s.q)+"</span>":"")+"</span>"+
+        '<span data-badge="'+esc(s.n)+'">'+badgeFor(s.n,e,spec)+"</span>"+
+        '<span class="caret">›</span></button>';
+      if(isOpen){
+        h+='<div class="stepbody">';
+        if(s.items){h+="<ul>";s.items.forEach(function(it){h+="<li>"+esc(it)+"</li>";});h+="</ul>";}
+        h+=esc(STEP_DESC[s.n]||"");
+        if(tms.length){
+          h+='<div class="timers"><div class="eyebrow">Timers</div><div class="trow">';
+          tms.forEach(function(t,ti){
+            h+='<button type="button" class="tstart" aria-pressed="false" data-timer="'+idx+'" data-ti="'+ti+'" data-tkey="'+esc(s.n+"#"+ti)+'">'+
+               '<svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M8 5.5v13l11-6.5z\"/></svg><span>'+esc(t.label)+(t.sub?' <span class="sub">'+esc(t.sub)+"</span>":"")+"</span></button>";
+          });
+          h+="</div></div>";
+        }
+        if(spec){
+          h+='<div class="logfields"><div class="eyebrow">Log this work</div>';
+          spec.fields.forEach(function(f){h+=fieldHTML(s.n,f,e);});
+          h+="</div>";
+        }
+        h+="</div>";
+      }
+      h+="</li>";
+    });
+    h+="</ol>";
+  }
+  h+="</div>";
+
+  if(tpl&&tpl.steps.length&&!tpl.rest){
+    h+='<div class="daysave" id="daySave"'+(state.dirty?"":" hidden")+'>'+
+       '<div class="status" id="saveStatus" role="status" aria-live="polite">Unsaved changes</div>'+
+       '<div class="row"><button class="btn ghost" type="button" id="btnRevert">Discard</button>'+
+       '<button class="btn" type="button" id="btnSaveDay">Save day</button></div></div>';
+  }
+  document.getElementById("dayView").innerHTML=h;
+  syncTimerButtons();
+}
+function refreshBadges(){
+  var d=state.draft,i=dayInfo(state.date),tpl=stepsFor(i);
+  if(!tpl) return;
+  var loggable=0,done=0;
+  tpl.steps.forEach(function(s){
+    var spec=specFor(s.n,s);
+    if(!spec) return;
+    loggable++;
+    var on=entryFilled(d.entries[s.n]);
+    if(on) done++;
+    var w=document.querySelector('[data-badge="'+CSS.escape(s.n)+'"]');
+    if(w) w.innerHTML=badgeFor(s.n,d.entries[s.n]||{},spec);
+  });
+  var c=document.getElementById("dayCount");
+  if(c) c.textContent=done+" of "+loggable+" key work logged";
+}
+function markDirty(){
+  state.dirty=true;
+  var bar=document.getElementById("daySave");
+  if(bar){bar.hidden=false;var st=document.getElementById("saveStatus");st.className="status";st.textContent="Unsaved changes";}
+  refreshBadges();
+}
+function saveDay(){
+  var k=state.date,i=dayInfo(k),btn=document.getElementById("btnSaveDay"),st=document.getElementById("saveStatus");
+  var entries={};
+  Object.keys(state.draft.entries).forEach(function(n){
+    var e=state.draft.entries[n],keep={};
+    Object.keys(e).forEach(function(f){if(e[f]!==""&&e[f]!=null)keep[f]=e[f];});
+    if(Object.keys(keep).length) entries[n]=keep;
+  });
+  var prev=data.logs[k],now=new Date().toISOString();
+  /* An emptied day stays as an empty record, not a deletion, so the merge on
+     the next device knows the day was cleared rather than never written. */
+  data.logs[k]={date:k,week:i.week||null,phaseKey:i.phaseKey||"",base:i.base||"",
+    sessionLabel:i.label||sessionTitleFor(i),entries:entries,
+    legacy:prev&&prev.legacy?prev.legacy:undefined,
+    createdAt:(prev&&prev.createdAt)||now,updatedAt:now};
+  btn.disabled=true; st.className="status busy"; st.textContent="Saving…";
+  saveAll().then(function(where){
+    st.className="status ok";
+    st.textContent = "Saved";
+    state.dirty=false; btn.disabled=false;
+    setTimeout(function(){var bar=document.getElementById("daySave");if(bar&&!state.dirty)bar.hidden=true;},1400);
+    renderProgress();
+  }).catch(function(e){
+    if(prev) data.logs[k]=prev; else delete data.logs[k];
+    btn.disabled=false; st.className="status err";
+    var c=e&&e.code;
+    st.textContent = c==="conflict" ? "A newer version was published — reloading."
+      : (c==="capability_disabled"||c==="capability_removed"||c==="not_writer"||c==="not_granted"||c==="consent_required")
+        ? "This browser is blocking storage — export your data instead."
+      : c==="remote_unreadable" ? "Could not reach your cloud copy — nothing was overwritten. Try again."
+      : c==="too_large" ? "Too much data to save. Export and trim old sessions."
+      : c==="rate_limited" ? "Saving too often — wait a moment and try again."
+      : "Could not save — try again";
+  });
+}
+function sessionTitleFor(i){return i.kind==="peak"?"Peak Window":i.kind==="plan"?i.label:"Rest day";}
+</script>
+
+<script>
+"use strict";
+/* ---------- progress: week over week by key work ---------- */
+function collectSeries(){
+  var out={};
+  Object.keys(data.logs).sort().forEach(function(dk){
+    var log=data.logs[dk],wk=log.week;
+    if(!wk||!log.entries) return;
+    var stepMap={},tpl=null;
+    try{ tpl=stepsFor(dayInfo(dk)); }catch(err){ tpl=null; }
+    if(tpl) tpl.steps.forEach(function(s){stepMap[s.n]=s;});
+    Object.keys(log.entries).forEach(function(drill){
+      var spec=specFor(drill,stepMap[drill]); if(!spec) return;
+      var e=log.entries[drill];
+      spec.metrics.forEach(function(m){
+        var v=metricValue(m,e); if(v==null) return;
+        var id=drill+"|"+m.k;
+        var s=out[id]||(out[id]={id:id,drill:drill,m:m,weeks:{}});
+        var w=s.weeks[wk]||(s.weeks[wk]={vals:[],notes:[],ctx:[],dates:[]});
+        w.vals.push(v); w.dates.push(dk);
+        if(e.notes) w.notes.push(e.notes);
+        if(m.ctx){
+          var c=m.ctx.map(function(x){
+            var v=e[x]; if(v===""||v==null) return "";
+            return ((m.ctxPre&&m.ctxPre[x])||"")+v;
+          }).filter(Boolean).join(" · ");
+          if(c) w.ctx.push(c);
+        }
+      });
+    });
+  });
+  Object.keys(out).forEach(function(id){
+    var s=out[id];
+    Object.keys(s.weeks).forEach(function(w){
+      var ws=s.weeks[w],v=ws.vals;
+      ws.value = s.m.agg==="avg" ? v.reduce(function(a,b){return a+b;},0)/v.length : Math.max.apply(null,v);
+      ws.ctxLabel = ws.ctx.length ? ws.ctx[ws.ctx.length-1] : "";
+    });
+    s.weekList=Object.keys(s.weeks).map(Number).sort(function(a,b){return a-b;});
+    s.last=s.weekList[s.weekList.length-1];
+  });
+  return out;
+}
+function sparkSVG(s){
+  var lo,hi;
+  if(s.m.kind==="rate"){lo=1;hi=5;}
+  else if(s.m.kind==="pick"){lo=1;hi=s.m.opts.length;}
+  else{
+    var vs=s.weekList.map(function(w){return s.weeks[w].value;});
+    lo=Math.min.apply(null,vs); hi=Math.max.apply(null,vs);
+    if(hi===lo){hi=lo+1;lo=Math.max(0,lo-1);}
+  }
+  var W=300,H=52,px=9,top=8,bot=30,base=37;
+  function X(w){return px+((w-1)/11)*(W-px*2);}
+  function Y(v){return bot-((v-lo)/(hi-lo))*(bot-top);}
+  var g='<svg class="spark" viewBox="0 0 '+W+" "+H+'" preserveAspectRatio="xMidYMid meet" role="img" aria-label="'+
+        esc(s.drill+" "+s.m.label+", week by week")+'">';
+  g+='<line x1="'+px+'" y1="'+base+'" x2="'+(W-px)+'" y2="'+base+'" stroke="var(--line2)" stroke-width="1"/>';
+  for(var w=1;w<=12;w++)
+    g+='<circle cx="'+X(w).toFixed(1)+'" cy="'+base+'" r="1.3" fill="var(--line)"/>';
+  var pts=s.weekList.map(function(w){return [X(w),Y(s.weeks[w].value)];});
+  if(pts.length>1)
+    g+='<polyline points="'+pts.map(function(p){return p[0].toFixed(1)+","+p[1].toFixed(1);}).join(" ")+
+       '" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+  pts.forEach(function(p,i){
+    var last=i===pts.length-1;
+    g+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+(last?4:2.6)+
+       '" fill="'+(last?"var(--accent)":"var(--accentLine)")+'"/>';
+  });
+  g+='<text x="'+px+'" y="49" font-size="8.5" fill="var(--ink3)" font-family="IBM Plex Mono, monospace">wk 1</text>';
+  g+='<text x="'+(W-px)+'" y="49" font-size="8.5" text-anchor="end" fill="var(--ink3)" font-family="IBM Plex Mono, monospace">wk 12</text>';
+  return g+"</svg>";
+}
+function deltaHTML(s,curWeek){
+  var ws=s.weeks[curWeek]; if(!ws) return "";
+  var prevW=null;
+  for(var i=s.weekList.length-1;i>=0;i--){if(s.weekList[i]<curWeek){prevW=s.weekList[i];break;}}
+  var cur=ws.value,prev=prevW?s.weeks[prevW].value:null;
+  var dcls="flat",dtxt="new";
+  if(prev!=null){
+    var diff=Math.round((cur-prev)*10)/10;
+    dcls = diff>0?"up":diff<0?"down":"flat";
+    dtxt = diff>0?"+"+diff:diff<0?String(diff):"0";
+  }
+  if(prev==null) dcls="new";
+  var vv = prev!=null ? metricLabel(s.m,prev)+" → "+metricLabel(s.m,cur) : metricLabel(s.m,cur)+"  (first time logged)";
+  return '<div class="delta"><span class="nm">'+esc(s.drill)+"<small>"+esc(s.m.label)+
+    (ws.ctxLabel?" · "+esc(ws.ctxLabel):"")+'</small></span><span class="chg '+dcls+'">'+dtxt+
+    '</span><span class="vv">'+esc(vv)+"</span></div>";
+}
+function renderProgress(){
+  var el=document.getElementById("viewProgress");
+  var series=collectSeries(),ids=Object.keys(series);
+  var sessions=0,entryCount=0,weeksSet={};
+  Object.keys(data.logs).forEach(function(k){
+    var l=data.logs[k],n=Object.keys(l.entries||{}).length;
+    if(!n) return;
+    sessions++; entryCount+=n;
+    if(l.week) weeksSet[l.week]=1;
+  });
+  var h="";
+  h+='<div class="kpis">'+kpi(sessions,"Sessions logged")+kpi(entryCount,"Key work logged")+
+     kpi(Object.keys(weeksSet).length,"Weeks with data")+kpi(ids.length,"Metrics tracked")+"</div>";
+
+  if(!ids.length){
+    el.innerHTML=h+'<div class="card pad" style="margin-top:12px"><div class="eyebrow">Week over week</div>'+
+      '<div class="empty" style="margin-top:10px">Log key work on a session in Plan — hangs, laps, crux intervals, movement drills — and its week-over-week trend appears here.</div></div>';
+    return;
+  }
+
+  var curWeek=Math.max.apply(null,Object.keys(weeksSet).map(Number));
+  var prevWeek=null;
+  Object.keys(weeksSet).map(Number).forEach(function(w){if(w<curWeek&&(prevWeek==null||w>prevWeek))prevWeek=w;});
+  var inCur=ids.filter(function(id){return series[id].weeks[curWeek];});
+  var missed=ids.filter(function(id){return !series[id].weeks[curWeek];});
+  inCur.sort(function(a,b){
+    var da=normDelta(series[a],curWeek),db=normDelta(series[b],curWeek);
+    return (db==null?-99:db)-(da==null?-99:da);
+  });
+
+  h+='<div class="card pad" style="margin-top:12px">';
+  h+='<div class="secthead"><div class="eyebrow">Week '+curWeek+(prevWeek?" vs week "+prevWeek:"")+'</div></div>';
+  h+='<div style="margin-top:8px">';
+  inCur.forEach(function(id){h+=deltaHTML(series[id],curWeek);});
+  h+="</div>";
+  if(missed.length)
+    h+='<div class="tiny" style="margin-top:10px">Not logged in week '+curWeek+": "+
+       esc(missed.map(function(id){return series[id].drill;}).filter(function(v,i,a){return a.indexOf(v)===i;}).join(", "))+".</div>";
+  h+="</div>";
+
+  var order=ids.slice().sort(function(a,b){
+    if(series[b].last!==series[a].last) return series[b].last-series[a].last;
+    return series[a].drill.localeCompare(series[b].drill);
+  });
+  h+='<div class="card pad" style="margin-top:12px"><div class="eyebrow">Key work trends</div>'+
+     '<div class="tiny" style="margin:6px 0 4px">One row per metric, weeks 1–12 left to right. Tap a row for the week-by-week detail.</div>';
+  order.forEach(function(id){
+    var s=series[id],open=state.openTrend===id,cur=s.weeks[s.last];
+    h+='<div class="trend">'+
+      '<button type="button" class="trendbtn" data-trend="'+esc(id)+'" aria-expanded="'+(open?"true":"false")+'">'+
+      '<span class="nm">'+esc(s.drill)+"<small>"+esc(s.m.label)+"</small></span>"+
+      '<span class="cur">'+esc(metricLabel(s.m,cur.value))+
+        (cur.ctxLabel?"<small>"+esc(cur.ctxLabel)+"</small>":"")+"</span>"+
+      '<span class="sparkwrap">'+sparkSVG(s)+"</span></button>";
+    if(open){
+      h+='<div class="wtable">';
+      s.weekList.slice().reverse().forEach(function(w){
+        var ws=s.weeks[w];
+        h+='<div class="wr"><span class="wk">Wk '+w+'</span><span class="wn">'+
+           esc(ws.notes.join(" · ")||ws.ctxLabel||shortDate(ws.dates[ws.dates.length-1]))+
+           '</span><span class="wv">'+esc(metricLabel(s.m,ws.value))+"</span></div>";
+      });
+      h+="</div>";
+    }
+    h+="</div>";
+  });
+  h+="</div>";
+  el.innerHTML=h;
+}
+function normDelta(s,w){
+  var d=deltaNum(s,w); if(d==null) return null;
+  var span = s.m.kind==="rate" ? 4 : s.m.kind==="pick" ? (s.m.opts.length-1) : null;
+  if(span) return d/span;
+  var p=null;
+  for(var i=s.weekList.length-1;i>=0;i--){if(s.weekList[i]<w){p=s.weekList[i];break;}}
+  var base=p==null?0:s.weeks[p].value;
+  return base?d/Math.abs(base):d;
+}
+function deltaNum(s,w){
+  var ws=s.weeks[w]; if(!ws) return null;
+  var p=null;
+  for(var i=s.weekList.length-1;i>=0;i--){if(s.weekList[i]<w){p=s.weekList[i];break;}}
+  return p==null?null:ws.value-s.weeks[p].value;
+}
+function kpi(n,l){return '<div class="kpi"><div class="n">'+n+'</div><div class="l">'+l+"</div></div>";}
+</script>
+
+<script>
+"use strict";
+/* ---------- wiring ---------- */
+function setView(v){
+  state.view=v;
+  document.getElementById("tabPlan").setAttribute("aria-selected",v==="plan");
+  document.getElementById("tabProgress").setAttribute("aria-selected",v==="progress");
+  document.getElementById("viewPlan").hidden=(v!=="plan");
+  document.getElementById("viewProgress").hidden=(v!=="progress");
+  if(v==="progress") renderProgress();
+  window.scrollTo(0,0);
+}
+function leaveDay(){
+  if(state.dirty && !window.confirm("You have unsaved key work on this day. Leave without saving?")) return false;
+  state.draft=null; state.dirty=false; return true;
+}
+function goDate(k,keepMonth){
+  state.date=k;
+  if(!keepMonth) state.month=k.slice(0,7);
+  renderCal(); renderDay();
+}
+function setCal(open){
+  state.calOpen=open;
+  document.getElementById("calBody").hidden=!open;
+  var b=document.getElementById("calFold");
+  b.setAttribute("aria-expanded",String(open));
+  b.textContent=open?"▾ Minimize calendar":"▸ Show calendar";
+  data.prefs.calCollapsed=!open; savePrefsSoon();
+}
+function ioMsg(txt,cls){
+  var el=document.getElementById("ioStatus");
+  el.className="status "+(cls||""); el.textContent=txt;
+  setTimeout(function(){if(el.textContent===txt){el.textContent="";el.className="status";}},5000);
+}
+
+document.getElementById("tabPlan").onclick=function(){setView("plan");};
+document.getElementById("tabProgress").onclick=function(){setView("progress");};
+document.getElementById("btnToday").onclick=function(){if(!leaveDay())return;setView("plan");goDate(todayKey());};
+document.getElementById("btnTheme").onclick=function(){
+  var t=data.prefs.theme;
+  data.prefs.theme = t==="dark" ? "light" : t==="light" ? "" : "dark";
+  applyTheme(); savePrefsSoon();
+};
+document.getElementById("prevMonth").onclick=function(){
+  var d=parseKey(state.month+"-01"); d.setUTCMonth(d.getUTCMonth()-1);
+  state.month=keyOf(d).slice(0,7); renderCal();
+};
+document.getElementById("nextMonth").onclick=function(){
+  var d=parseKey(state.month+"-01"); d.setUTCMonth(d.getUTCMonth()+1);
+  state.month=keyOf(d).slice(0,7); renderCal();
+};
+document.getElementById("calFold").onclick=function(){setCal(!state.calOpen);};
+document.getElementById("prevDay").onclick=function(){if(!leaveDay())return;goDate(addDays(state.date,-1));};
+document.getElementById("nextDay").onclick=function(){if(!leaveDay())return;goDate(addDays(state.date,1));};
+document.getElementById("calGrid").addEventListener("click",function(e){
+  var b=e.target.closest("[data-day]"); if(!b) return;
+  if(!leaveDay()) return;
+  goDate(b.getAttribute("data-day"),true);
+});
+
+document.getElementById("viewPlan").addEventListener("click",function(e){
+  var t=e.target;
+  var tb=t.closest("[data-timer]");
+  if(tb){
+    var si=+tb.getAttribute("data-timer"),ti=+tb.getAttribute("data-ti");
+    var inf=dayInfo(state.date),tp=stepsFor(inf);
+    if(tp&&tp.steps[si]){
+      var st=tp.steps[si],ps=timersFor(st)[ti];
+      if(ps) timerToggle(ps,st.n,st.n+"#"+ti);
+    }
+    return;
+  }
+  var sw=t.closest("[data-base]");
+  if(sw){
+    var i=dayInfo(state.date);
+    data.choices[i.week]=sw.getAttribute("data-base");
+    savePrefsSoon(); renderCal(); renderDay(); renderProgress(); return;
+  }
+  var step=t.closest("[data-step]");
+  if(step){var id=step.getAttribute("data-step");state.open[id]=!state.open[id];renderDay();return;}
+  if(t.closest("#btnSaveDay")){saveDay();return;}
+  if(t.closest("#btnRevert")){state.draft=null;state.dirty=false;renderDay();return;}
+  var chip=t.closest("[data-e][data-val]");
+  if(chip){
+    var drill=chip.getAttribute("data-e"),k=chip.getAttribute("data-k"),v=chip.getAttribute("data-val");
+    var on=chip.getAttribute("aria-pressed")==="true";
+    var grp=chip.parentNode.querySelectorAll("[data-val]");
+    for(var n=0;n<grp.length;n++) grp[n].setAttribute("aria-pressed","false");
+    chip.setAttribute("aria-pressed",on?"false":"true");
+    ent(drill)[k]=on?"":v;
+    markDirty(); return;
+  }
+});
+function bindField(e){
+  var t=e.target;
+  if(!t.hasAttribute||!t.hasAttribute("data-e")||!t.hasAttribute("data-k")) return;
+  if(t.hasAttribute("data-val")) return;
+  ent(t.getAttribute("data-e"))[t.getAttribute("data-k")]=t.value;
+  markDirty();
+}
+document.getElementById("viewPlan").addEventListener("input",bindField);
+document.getElementById("viewPlan").addEventListener("change",bindField);
+
+document.getElementById("viewProgress").addEventListener("click",function(e){
+  var tr=e.target.closest("[data-trend]");
+  if(tr){var id=tr.getAttribute("data-trend");state.openTrend=state.openTrend===id?null:id;renderProgress();}
+});
+
+window.addEventListener("beforeunload",function(e){
+  if(state.dirty){e.preventDefault();e.returnValue="";}
+});
+
+/* ---------- timer bar ---------- */
+document.getElementById("tMain").onclick=function(){
+  if(!T.on){timerHalt();return;}
+  var p=T.phases[T.i];
+  if(p.mode==="up"){timerNext();return;}
+  if(T.paused){T.endAt=Date.now()+T.held*1000;T.paused=false;}
+  else{T.held=(T.endAt-Date.now())/1000;T.paused=true;}
+  paintTimer();
+};
+document.getElementById("tSkip").onclick=function(){if(T.on)timerNext();else timerHalt();};
+document.getElementById("tStop").onclick=function(){timerHalt();};
+document.getElementById("tSound").onclick=function(){
+  data.prefs.timerSound = !sndOn();
+  if(data.prefs.timerSound) audioPrime();
+  paintSound(); savePrefsSoon();
+};
+document.addEventListener("visibilitychange",function(){
+  if(document.visibilityState==="visible"&&T.on){wakeOn();paintTimer();}
+});
+
+/* ---------- export / import ---------- */
+document.getElementById("btnExport").onclick=function(){
+  var payload=JSON.stringify({version:2,choices:data.choices,logs:data.logs,exportedAt:new Date().toISOString()},null,2);
+  var name="climb-512-logs-"+todayKey()+".json";
+  try{
+    var blob=new Blob([payload],{type:"application/json"});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement("a");
+    a.href=url; a.download=name; a.rel="noopener";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){URL.revokeObjectURL(url);},2000);
+    ioMsg("Exported "+name,"ok");
+  }catch(err){ ioMsg("Could not export — try a different browser.","err"); }
+};
+document.getElementById("btnImport").onclick=function(){document.getElementById("fileImport").click();};
+document.getElementById("fileImport").onchange=function(e){
+  var f=e.target.files&&e.target.files[0]; if(!f) return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    var parsed;
+    try{parsed=JSON.parse(rd.result);}catch(err){ioMsg("That file is not valid JSON.","err");return;}
+    if(!parsed||typeof parsed!=="object"||typeof parsed.logs!=="object"||!parsed.logs){
+      ioMsg("That backup is missing its logs — nothing was changed.","err");return;}
+    var beforeLogs=data.logs,beforeChoices=data.choices;
+    var m=migrate({version:parsed.version||1,logs:parsed.logs,choices:parsed.choices||{},prefs:data.prefs});
+    data.logs=m.logs; data.choices=m.choices;
+    ioMsg("Restoring…","busy");
+    saveAll().then(function(where){
+      var n=Object.keys(data.logs).filter(function(k){
+        return Object.keys(data.logs[k].entries||{}).length;}).length;
+      ioMsg("Restored "+n+" session"+(n===1?"":"s")+".","ok");
+      state.draft=null; state.dirty=false; renderCal(); renderDay(); renderProgress();
+    }).catch(function(){
+      data.logs=beforeLogs; data.choices=beforeChoices;
+      ioMsg("Could not save the restored data — nothing changed.","err");
+    });
+  };
+  rd.readAsText(f);
+  e.target.value="";
+};
+
+/* ---------- init ---------- */
+(function init(){
+  var tk=todayKey();
+  state.date = tk<PLAN_START ? PLAN_START : (tk>PEAK_END ? PEAK_END : tk);
+  state.month = state.date.slice(0,7);
+  renderCal(); renderDay(); renderProgress(); paintSound();
+  loadData().then(function(d){
+    data=d; applyTheme(); paintSound();
+    if(data.prefs.calCollapsed) setCal(false);
+    state.draft=null; state.dirty=false;
+    renderCal(); renderDay(); renderProgress(); paintStorage();
+  });
+  capReady.then(paintStorage);
+  if("serviceWorker" in navigator)
+    window.addEventListener("load",function(){
+      navigator.serviceWorker.register("./sw.js").catch(function(){});
+    });
+})();
+</script>
+</body>
+</html>
