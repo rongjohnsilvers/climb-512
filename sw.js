@@ -2,7 +2,7 @@
    Network first for the page so a redeploy is picked up immediately;
    cache fallback so the tracker still opens in a gym with no signal.
    Your logs are in localStorage and are never touched by this cache. */
-const CACHE = "climb512-v1";
+const CACHE = "climb512-v2";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest",
                "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 
