@@ -189,6 +189,20 @@ button{font:inherit;color:inherit}
 .hr{height:1px;background:var(--line2);margin:14px 0}
 .tiny{font-size:12px;color:var(--ink3)}
 @media (prefers-reduced-motion: reduce){*{transition:none !important;animation:none !important}}
+
+/* ---- hamstring rehab ---- */
+.rehab{margin-bottom:12px;border-color:var(--accentLine)}
+.rehab .rhead{padding:12px 14px;border-bottom:1px solid var(--line2)}
+.rehab .rtitle{font-family:Archivo,sans-serif;font-weight:600;font-size:16px;margin-top:2px}
+.rx{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line2);padding:11px 14px;min-height:44px;cursor:pointer}
+.rx:first-of-type{border-top:0}
+.rx:hover{background:var(--surface2)}
+.rx .box{flex:none;width:20px;height:20px;border:1.5px solid var(--line);border-radius:6px;margin-top:1px;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+.rx[aria-pressed="true"] .box{background:var(--accent);border-color:var(--accent);color:var(--accentInk)}
+.rx .rn{display:block;font-weight:600;font-size:14px}
+.rx .rq{display:block;color:var(--ink3);font-size:12.5px;margin-top:1px}
+.rcheck{padding:12px 14px;border-top:1px solid var(--line2)}
+.rcheck .tiny{margin-top:8px}
 </style>
 </head>
 <body>
@@ -917,7 +931,7 @@ var LEAD_GRADES=["5.8","5.9","5.10a","5.10b","5.10c","5.10d","5.11a","5.11b","5.
 var BOULDER_GRADES=["V0","V1","V2","V3","V4","V5","V6","V7","V8"];
 var MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
 
-var data={version:2,choices:{},logs:{},prefs:{},savedAt:"",pendingSync:false};
+var data={version:2,choices:{},logs:{},prefs:{},rehab:{},savedAt:"",pendingSync:false};
 var state={view:"plan",date:null,month:null,calOpen:true,open:{},draft:null,dirty:false,openTrend:null};
 var artifactApi=null,downloadsApi=null;
 
@@ -980,10 +994,11 @@ function stepsFor(i){
 
 /* ---------- persistence ---------- */
 function migrate(d){
-  if(!d||typeof d!=="object") return {version:2,choices:{},logs:{},prefs:{}};
+  if(!d||typeof d!=="object") return {version:2,choices:{},logs:{},prefs:{},rehab:{}};
   if(typeof d.logs!=="object"||!d.logs) d.logs={};
   if(typeof d.prefs!=="object"||!d.prefs) d.prefs={};
   if(typeof d.choices!=="object"||!d.choices) d.choices={};
+  if(typeof d.rehab!=="object"||!d.rehab) d.rehab={};
   Object.keys(d.logs).forEach(function(k){
     var s=d.logs[k];
     if(!s||typeof s!=="object"){delete d.logs[k];return;}
@@ -1027,7 +1042,7 @@ function mergeData(remote,local){
   if(!remote) return local;
   if(!local) return remote;
   var rs=remote.savedAt||"",ls=local.savedAt||"",top=ls>rs?local:remote;
-  var out={version:2,choices:top.choices||{},prefs:top.prefs||{},logs:{},
+  var out={version:2,choices:top.choices||{},prefs:top.prefs||{},rehab:top.rehab||{},logs:{},
            savedAt:(ls>rs?ls:rs),pendingSync:!!local.pendingSync};
   var keys={};
   Object.keys(remote.logs||{}).forEach(function(k){keys[k]=1;});
@@ -1416,6 +1431,72 @@ function badgeFor(name,e,spec){
   return '<span class="badge'+(on?" on":"")+'" title="'+(on?"Logged":"Not logged yet")+'">'+(on?"✓":"")+"</span>";
 }
 
+
+/* ---------- hamstring rehab (Rock Rehab Pyramid, theclimbingdoctor.com) ---------- */
+var RX={
+ foam:["Foam roll hamstring","1-2 min each leg, 2-3x/day. Ease off the roller if painful."],
+ fly:["Butterfly stretch","3 x 20 sec, 2-3x/day"],
+ sls:["Seated single-leg hamstring stretch","3 x 20 sec each leg, neutral spine, strong but comfortable"],
+ cr:["Contract/relax supine 90/90 stretch","4 x 15 sec stretch, 5 sec heel-dig between. Belt or rope on the foot."],
+ golf:["Golfer's pick-up","2 x 15 reps each leg, only as far as pain-free"],
+ br2:["Single-leg bridge","2 x 15 reps, 2 sec hold each"],
+ calf:["Calf raises","2 x 15 each side, heels dropping below the step"],
+ br5:["Single-leg bridge, long hold","2 x 15 reps, 5 sec hold each"],
+ curl:["Prone band hamstring curl","2 x 15, slow lowering"],
+ gob:["Goblet squat","2 x 15, 10-15 lb, touch the chair lightly"],
+ rdl:["Romanian deadlift","2 x 15, 5-10 lb, lower to just below the knee"],
+ mv:["Low heel hooks (Movement 1-3)","A few reps on holds low and close to you. Heel near the body, point the toes after setting the heel, load slowly. Stop at any pain."],
+ chk:["Pain-free heel hook check","One easy heel hook near the ground, then a bridge, RDL and walk. All pain-free = clear for full capacity."],
+ warm:["Full hamstring warm-up","Foam roll, stretch, a few easy heel hooks before climbing."]
+};
+var RPLAN={
+ "2026-11-09":{lv:"Mobility 2",ex:["sls","foam","fly"],note:"Done today. Check soreness tomorrow morning."},
+ "2026-11-10":{lv:"Mobility 3",ex:["cr","golf","foam"],note:"Climbing today: skip heel hooks and explosive moves."},
+ "2026-11-11":{lv:"Strength 1",ex:["br2","calf","foam","sls"],note:"Rest day from climbing."},
+ "2026-11-12":{lv:"Strength 1 (light)",ex:["br2","calf","foam","sls"],note:"Boulder Power today: no heel hooks or limit moves that load the hamstring."},
+ "2026-11-13":{lv:"Strength 2",ex:["br5","curl","gob","rdl","foam","sls"],note:"Rest day from climbing."},
+ "2026-11-14":{lv:"Strength 2 (light)",ex:["br5","curl","foam","sls"],note:"Light movement only. No heel hooks."},
+ "2026-11-15":{lv:"Strength 2",ex:["br5","curl","gob","rdl","foam","sls"],note:"Rest day from climbing."},
+ "2026-11-16":{lv:"Mobility + movement",ex:["foam","sls","cr","mv"],note:"Heel hooks low, close and slow only."},
+ "2026-11-17":{lv:"Strength 2",ex:["br5","curl","gob","rdl","foam","sls"],note:"Last strength day before the check."},
+ "2026-11-18":{lv:"Mobility + check",ex:["foam","sls","cr","chk"],note:"If anything hurts, drop back a level and retry tomorrow."},
+ "2026-11-19":{lv:"Back to full capacity",ex:["warm"],note:"Target day. Warm up fully. Only go full capacity if yesterday's check was pain-free."}
+};
+var RSORE={
+ better:"Better than yesterday: move on as planned.",
+ same:"No change: repeat today's level. The article holds a week; if it stays flat, Nov 19 may slip.",
+ worse:"More sore: drop back one level today and retry. Nov 19 moves back a day per drop."
+};
+function rehabHTML(k){
+  var p=RPLAN[k]; if(!p) return "";
+  var r=(data.rehab&&data.rehab[k])||{},done=r.done||{},n=0;
+  p.ex.forEach(function(x){if(done[x])n++;});
+  var h='<div class="card rehab"><div class="rhead"><div class="eyebrow">Hamstring rehab</div>'+
+    '<div class="rtitle">'+esc(p.lv)+'</div><div class="phasedesc" style="margin-top:4px">'+esc(p.note)+'</div>'+
+    '<div class="eyebrow" style="margin-top:8px">'+n+' of '+p.ex.length+' done</div></div>';
+  p.ex.forEach(function(x){
+    var on=!!done[x];
+    h+='<button type="button" class="rx" data-rh="ex" data-x="'+x+'" aria-pressed="'+on+'"><span class="box">'+(on?"✓":"")+'</span>'+
+       '<span><span class="rn">'+esc(RX[x][0])+'</span><span class="rq">'+esc(RX[x][1])+'</span></span></button>';
+  });
+  h+='<div class="rcheck"><div class="eyebrow">Soreness vs yesterday</div><div class="chips" style="margin-top:6px">';
+  ["better","same","worse"].forEach(function(v){
+    h+='<button type="button" class="chipbtn" data-rh="sore" data-v="'+v+'" aria-pressed="'+(r.sore===v)+'">'+v[0].toUpperCase()+v.slice(1)+'</button>';
+  });
+  h+='</div>'+(r.sore?'<div class="tiny">'+esc(RSORE[r.sore])+'</div>':'')+'</div></div>';
+  return h;
+}
+function rehabTap(t){
+  var b=t.closest("[data-rh]"); if(!b) return false;
+  var k=state.date; if(!data.rehab) data.rehab={};
+  var r=data.rehab[k]||(data.rehab[k]={done:{}});
+  if(b.getAttribute("data-rh")==="ex"){var x=b.getAttribute("data-x");r.done[x]=!r.done[x];}
+  else{var v=b.getAttribute("data-v");r.sore=(r.sore===v)?"":v;}
+  r.updatedAt=new Date().toISOString();
+  saveAll().catch(function(){}); renderDay();
+  return true;
+}
+
 /* ---------- day view ---------- */
 function chipHTML(text,color){return '<span class="chip" style="color:'+color+'"><span class="sw"></span>'+esc(text)+"</span>";}
 function renderDay(){
@@ -1512,7 +1593,7 @@ function renderDay(){
        '<div class="row"><button class="btn ghost" type="button" id="btnRevert">Discard</button>'+
        '<button class="btn" type="button" id="btnSaveDay">Save day</button></div></div>';
   }
-  document.getElementById("dayView").innerHTML=h;
+  document.getElementById("dayView").innerHTML=rehabHTML(k)+h;
   syncTimerButtons();
 }
 function refreshBadges(){
@@ -1814,6 +1895,7 @@ document.getElementById("calGrid").addEventListener("click",function(e){
 
 document.getElementById("viewPlan").addEventListener("click",function(e){
   var t=e.target;
+  if(rehabTap(t)) return;
   var tb=t.closest("[data-timer]");
   if(tb){
     var si=+tb.getAttribute("data-timer"),ti=+tb.getAttribute("data-ti");
@@ -1886,7 +1968,7 @@ document.addEventListener("visibilitychange",function(){
 
 /* ---------- export / import ---------- */
 document.getElementById("btnExport").onclick=function(){
-  var payload=JSON.stringify({version:2,choices:data.choices,logs:data.logs,exportedAt:new Date().toISOString()},null,2);
+  var payload=JSON.stringify({version:2,choices:data.choices,logs:data.logs,rehab:data.rehab||{},exportedAt:new Date().toISOString()},null,2);
   var name="climb-512-logs-"+todayKey()+".json";
   try{
     var blob=new Blob([payload],{type:"application/json"});
@@ -1907,9 +1989,9 @@ document.getElementById("fileImport").onchange=function(e){
     try{parsed=JSON.parse(rd.result);}catch(err){ioMsg("That file is not valid JSON.","err");return;}
     if(!parsed||typeof parsed!=="object"||typeof parsed.logs!=="object"||!parsed.logs){
       ioMsg("That backup is missing its logs — nothing was changed.","err");return;}
-    var beforeLogs=data.logs,beforeChoices=data.choices;
-    var m=migrate({version:parsed.version||1,logs:parsed.logs,choices:parsed.choices||{},prefs:data.prefs});
-    data.logs=m.logs; data.choices=m.choices;
+    var beforeLogs=data.logs,beforeChoices=data.choices,beforeRehab=data.rehab;
+    var m=migrate({version:parsed.version||1,logs:parsed.logs,choices:parsed.choices||{},rehab:parsed.rehab||{},prefs:data.prefs});
+    data.logs=m.logs; data.choices=m.choices; data.rehab=m.rehab;
     ioMsg("Restoring…","busy");
     saveAll().then(function(where){
       var n=Object.keys(data.logs).filter(function(k){
@@ -1917,7 +1999,7 @@ document.getElementById("fileImport").onchange=function(e){
       ioMsg("Restored "+n+" session"+(n===1?"":"s")+".","ok");
       state.draft=null; state.dirty=false; renderCal(); renderDay(); renderProgress();
     }).catch(function(){
-      data.logs=beforeLogs; data.choices=beforeChoices;
+      data.logs=beforeLogs; data.choices=beforeChoices; data.rehab=beforeRehab;
       ioMsg("Could not save the restored data — nothing changed.","err");
     });
   };
